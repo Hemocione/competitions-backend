@@ -9,7 +9,6 @@ const donationSchema = new Schema({
   userEmail: {
     required: true,
     type: String,
-    unique: true
   },
   createdAt: {
     type: Date,
@@ -33,10 +32,6 @@ const donationSchema = new Schema({
   }
 });
 
-donationSchema.index({
-  competition: 'text',
-  institution: 'text',
-  team: 'text'
-});
+donationSchema.index({ userEmail: 1, competition: 1 }, { unique: true })
 
 module.exports = mongoose.model("Donation", donationSchema);
