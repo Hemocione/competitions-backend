@@ -21,6 +21,11 @@ const competitionSchema = new Schema({
     required: true,
     type: String,
   },
+  partialDonationCount: {
+    required: true,
+    type: Number,
+    default: 0
+  },
   startAt: {
     required: true,
     type: Date,
