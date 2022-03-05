@@ -6,7 +6,7 @@ const donationModel = require("../models/donation")
 
 router.get("/competitions", (req, res, next) => {
   var query = {}
-  if (req.body.available) {
+  if (req.query.available === "true") {
     query['startAt'] = { $lte: Date.now() }
     query['endAt'] = { $gte: Date.now() }
   } else {
@@ -15,7 +15,7 @@ router.get("/competitions", (req, res, next) => {
   competitions = competitionModel.find(query).exec();
   competitions
     .then((competitions) => {
-      return res.status(200).json(competitions);
+      res.status(200).json(competitions);
     })
     .catch((err) => {
       next(err);
@@ -23,8 +23,8 @@ router.get("/competitions", (req, res, next) => {
 });
 
 router.post('/donations', (req, res, next) => {
-  const validAttributes = (({ userName, userEmail, competition, institution, team}) => ({ userName, userEmail, competition, institution, team}))(req.body);
-  
+  const validAttributes = (({ userName, userEmail, competition, institution, team }) => ({ userName, userEmail, competition, institution, team }))(req.body);
+
   const query = {
     endAt: { $gte: Date.now() },
     startAt: { $lte: Date.now() },
@@ -41,7 +41,7 @@ router.post('/donations', (req, res, next) => {
         donation
           .save()
           .then((donation) => {
-            competition = competitionModel.findOneAndUpdate({_id : validAttributes.competition}, { $inc : {'partialDonationCount' : 1 }}).exec()
+            competition = competitionModel.findOneAndUpdate({ _id: validAttributes.competition }, { $inc: { 'partialDonationCount': 1 } }).exec()
             competition
               .catch((err) => {
                 console.log(err)
@@ -50,13 +50,13 @@ router.post('/donations', (req, res, next) => {
             return res.status(201).json(donation)
           })
           .catch((err) => {
-            if(err instanceof mongoose.mongo.MongoError && err.code === 11000) {
+            if (err instanceof mongoose.mongo.MongoError && err.code === 11000) {
               return res.status(422).json({ message: "Você já doou nesta competição." })
             } else {
               next(err);
             }
           })
-        }
+      }
     })
     .catch((err) => {
       next(err);
