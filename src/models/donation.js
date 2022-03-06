@@ -1,37 +1,22 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
-
-const donationSchema = new Schema({
-  userName: {
-    required: true,
-    type: String,
-  },
-  userEmail: {
-    required: true,
-    type: String,
-  },
-  createdAt: {
-    type: Date,
-    required: true,
-    default: Date.now()
-  },
-  competition: {
-    required: true,
-    type: Schema.Types.ObjectId,
-    ref: "Competition",
-  },
-  institution: {
-    required: true,
-    type: Schema.Types.ObjectId,
-    ref: "Institution"
-  },
-  team: {
-    required: true,
-    type: Schema.Types.ObjectId,
-    ref: "Team"
+'use strict';
+const {
+  Model
+} = require('sequelize');
+module.exports = (sequelize, DataTypes) => {
+  class donation extends Model {
+    static associate(models) {
+      this.belongsTo(models.competition_team, {
+        foreignKey: 'competition_team_id',
+      })
+    }
   }
-});
-
-donationSchema.index({ userEmail: 1, competition: 1 }, { unique: true })
-
-module.exports = mongoose.model("Donation", donationSchema);
+  donation.init({
+    user_name: DataTypes.STRING,
+    user_email: DataTypes.STRING,
+    competition_team_id: DataTypes.INTEGER
+  }, {
+    sequelize,
+    modelName: 'donation',
+  });
+  return donation;
+};

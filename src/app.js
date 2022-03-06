@@ -8,7 +8,7 @@ require("./config")();
 
 const end = loader({
   expressApp: app,
-  isTest: process.env.NODE_ENV === "test" ? true : false,
+  isTest: process.env.ENV === "test" ? true : false,
 })
   .then(() => {
     return app.listen(PORT, () => console.log(`Server Starting Port ${PORT}`));
