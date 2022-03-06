@@ -9,10 +9,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: 'institutionUniqueTeams'
       },
       institution_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        unique: 'institutionUniqueTeams',
+        references: { model: 'institutions', key: 'id'}
       },
       createdAt: {
         allowNull: false,
@@ -21,6 +24,12 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      }
+    }, {
+      uniqueKeys: {
+        institutionUniqueTeams: {
+          fields: ['name', 'institution_id']
+        }
       }
     });
   },

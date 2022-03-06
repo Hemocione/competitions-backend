@@ -9,13 +9,17 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       donation_count: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
       },
       team_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        unique: 'uniqueParticipant',
+        references: { model: 'teams', key: 'id'}
       },
       competition_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        unique: 'uniqueParticipant',
+        references: { model: 'competitions', key: 'id'}
       },
       createdAt: {
         allowNull: false,
@@ -24,6 +28,12 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      }
+    }, {
+      uniqueKeys: {
+        uniqueParticipant: {
+          fields: ['competition_id', 'team_id']
+        }
       }
     });
   },

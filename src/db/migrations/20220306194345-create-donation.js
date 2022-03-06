@@ -12,10 +12,17 @@ module.exports = {
         type: Sequelize.STRING
       },
       user_email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        unique: 'uniqueDonationCompetition'
       },
       competition_team_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        references: { model: 'competition_teams', key: 'id'}
+      },
+      competition_id: {
+        type: Sequelize.INTEGER,
+        unique: 'uniqueDonationCompetition',
+        references: { model: 'competitions', key: 'id'}
       },
       createdAt: {
         allowNull: false,
@@ -24,6 +31,12 @@ module.exports = {
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE
+      }
+    }, {
+      uniqueKeys: {
+        uniqueDonationCompetition: {
+          fields: ['user_email', 'competition_id']
+        }
       }
     });
   },
