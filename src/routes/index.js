@@ -1,25 +1,16 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
-const competitionModel = require("../models/competition");
-const donationModel = require("../models/donation")
+const { getCompetitions } = require('../services/competitionService')
 
 router.get("/competitions", (req, res, next) => {
-  var query = {}
-  if (req.query.available === "true") {
-    query['startAt'] = { $lte: Date.now() }
-    query['endAt'] = { $gte: Date.now() }
-  } else {
-    query['endAt'] = { $lt: Date.now() }
-  }
-  competitions = competitionModel.find(query).exec();
-  competitions
-    .then((competitions) => {
-      res.status(200).json(competitions);
-    })
-    .catch((err) => {
-      next(err);
-    });
+  console.log('oii')
+  getCompetitions().then((competitions) => {
+    res.status(200).json(JSON.stringify(competitions));
+  })
+  .catch((err) => {
+    res.status(500).json({ "message": "Ocorreu um erro inesperado, desculpe pelo transtorno."}) 
+    console.log(err)
+  });
 });
 
 router.post('/donations', (req, res, next) => {
