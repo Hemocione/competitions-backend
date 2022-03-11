@@ -6,17 +6,21 @@ module.exports = (sequelize, DataTypes) => {
   class team extends Model {
     static associate(models) {
       this.belongsTo(models.institution, {
-        foreignKey: 'institution_id'
+        foreignKey: 'institutionId'
       })
 
-      this.hasMany(models.competition_team, {
-        foreignKey: 'team_id'
+      this.hasMany(models.competitionTeam, {
+        foreignKey: 'teamId'
+      })
+
+      this.belongsToMany(models.competition, {
+        through: models.competitionTeam
       })
     }
   }
   team.init({
     name: DataTypes.STRING,
-    institution_id: DataTypes.INTEGER
+    institutionId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'team',

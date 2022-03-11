@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
   class institution extends Model {
     static associate(models) {
       this.hasMany(models.team, {
-        foreignKey: 'institution_id'
+        foreignKey: 'institutionId'
       })
     }
   }

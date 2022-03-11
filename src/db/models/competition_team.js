@@ -3,29 +3,29 @@ const {
   Model
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  class competition_team extends Model {
+  class competitionTeam extends Model {
     static associate(models) {
       this.belongsTo(models.team, {
-        foreignKey: 'team_id'
+        foreignKey: 'teamId'
       })
 
       this.belongsTo(models.competition, {
-        foreignKey: 'competition_id'
+        foreignKey: 'competitionId'
       })
 
       this.hasMany(models.donation, {
-        foreignKey: 'competition_team_id'
+        foreignKey: 'competitionTeamId'
       })
     }
   }
 
-  competition_team.init({
+  competitionTeam.init({
     donation_count: DataTypes.INTEGER,
-    team_id: DataTypes.INTEGER,
-    competition_id: DataTypes.INTEGER
+    teamId: DataTypes.INTEGER,
+    competitionId: DataTypes.INTEGER
   }, {
     sequelize,
-    modelName: 'competition_team',
+    modelName: 'competitionTeam',
   });
-  return competition_team;
+  return competitionTeam;
 };

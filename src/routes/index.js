@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const { getCompetitions } = require('../services/competitionService')
+const { getCompetitions, getCompetition } = require('../services/competitionService')
 
-router.get("/competitions", (req, res, next) => {
+router.get("/", (req, res, next) => {
   getCompetitions().then((competitions) => {
     res.status(200).json(competitions);
   })
@@ -12,13 +12,30 @@ router.get("/competitions", (req, res, next) => {
   });
 });
 
-router.post('/donations', (req, res, next) => {
+router.get("/:id", (req, res, next) => {
+  const id = parseInt(req.params.id)
+  if (!Number.isInteger(id)) {
+    return res.status(404).json({ "message": "Competição não encontrada." })
+  }
+  console.log('oiiiiii lau')
+
+  getCompetition(id).then((competition) => {
+    console.log('oiee deu bom')
+    res.status(200).json(competition)
+  }).catch((err) => {
+    console.log('oiee deu ruim')
+    res.status(404).json({ "message": "Competição não encontrada."}) 
+    console.log(err)
+  });
+});
+
+router.post('/:id/donations', (req, res, next) => {
   const validAttributes = (({ userName, userEmail, competition, institution, team }) => ({ userName, userEmail, competition, institution, team }))(req.body);
 
   const query = {
     endAt: { $gte: Date.now() },
     startAt: { $lte: Date.now() },
-    _id: validAttributes.competition
+    Id: validAttributes.competition
   }
 
   validCompetition = competitionModel.findOne(query).exec()
@@ -31,7 +48,7 @@ router.post('/donations', (req, res, next) => {
         donation
           .save()
           .then((donation) => {
-            competition = competitionModel.findOneAndUpdate({ _id: validAttributes.competition }, { $inc: { 'partialDonationCount': 1 } }).exec()
+            competition = competitionModel.findOneAndUpdate({ Id: validAttributes.competition }, { $inc: { 'partialDonationCount': 1 } }).exec()
             competition
               .catch((err) => {
                 console.log(err)
@@ -53,4 +70,4 @@ router.post('/donations', (req, res, next) => {
     });
 })
 
-module.exports = { url: "/", router };
+module.exports = { url: "/competitions", router };

@@ -1,4 +1,4 @@
-const { competition, sequelize } = require('../db/models');
+const { competition, sequelize, competitionTeam, team } = require('../db/models');
 
 const getCompetitions = async () => {
   // status 2 = ativo, 1 = upcoming, 0 = finalizado
@@ -23,4 +23,24 @@ const getCompetitions = async () => {
   )
 }
 
-module.exports = { getCompetitions }
+const getCompetition = async (id) => {
+  return (
+    await competition.findOne({
+      where: { 
+        id: id
+      },
+      include: [
+        {
+          model: competitionTeam,
+          include: [
+            {
+              model: team
+            }
+          ]
+        }
+      ],
+    })
+  )
+}
+
+module.exports = { getCompetitions, getCompetition }

@@ -5,24 +5,24 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class donation extends Model {
     static associate(models) {
-      this.belongsTo(models.competition_team, {
-        foreignKey: 'competition_team_id',
+      this.belongsTo(models.competitionTeam, {
+        foreignKey: 'competitionTeamId',
       })
 
       this.belongsTo(models.team, {
-        through: models.competition_team
+        through: models.competitionTeam
       })
 
       this.belongsTo(models.competition, {
-        foreignKey: 'competition_id'
+        foreignKey: 'competitionId'
       })
     }
   }
   donation.init({
     user_name: DataTypes.STRING,
     user_email: DataTypes.STRING,
-    competition_team_id: DataTypes.INTEGER,
-    competition_id: DataTypes.INTEGER
+    competitionTeamId: DataTypes.INTEGER,
+    competitionId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'donation',

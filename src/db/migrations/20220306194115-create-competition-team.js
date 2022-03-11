@@ -1,7 +1,7 @@
 'use strict';
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('competition_teams', {
+    await queryInterface.createTable('competitionTeams', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -11,12 +11,12 @@ module.exports = {
       donation_count: {
         type: Sequelize.INTEGER,
       },
-      team_id: {
+      teamId: {
         type: Sequelize.INTEGER,
         unique: 'uniqueParticipant',
         references: { model: 'teams', key: 'id'}
       },
-      competition_id: {
+      competitionId: {
         type: Sequelize.INTEGER,
         unique: 'uniqueParticipant',
         references: { model: 'competitions', key: 'id'}
@@ -32,12 +32,12 @@ module.exports = {
     }, {
       uniqueKeys: {
         uniqueParticipant: {
-          fields: ['competition_id', 'team_id']
+          fields: ['competitionId', 'teamId']
         }
       }
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('competition_teams');
+    await queryInterface.dropTable('competitionTeams');
   }
 };

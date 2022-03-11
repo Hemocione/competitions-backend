@@ -12,7 +12,7 @@ module.exports = {
         type: Sequelize.STRING,
         unique: 'institutionUniqueTeams'
       },
-      institution_id: {
+      institutionId: {
         type: Sequelize.INTEGER,
         unique: 'institutionUniqueTeams',
         references: { model: 'institutions', key: 'id'}
@@ -28,7 +28,7 @@ module.exports = {
     }, {
       uniqueKeys: {
         institutionUniqueTeams: {
-          fields: ['name', 'institution_id']
+          fields: ['name', 'institutionId']
         }
       }
     });

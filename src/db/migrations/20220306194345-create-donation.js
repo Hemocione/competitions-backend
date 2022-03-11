@@ -15,11 +15,11 @@ module.exports = {
         type: Sequelize.STRING,
         unique: 'uniqueDonationCompetition'
       },
-      competition_team_id: {
+      competitionTeamId: {
         type: Sequelize.INTEGER,
-        references: { model: 'competition_teams', key: 'id'}
+        references: { model: 'competitionTeams', key: 'id'}
       },
-      competition_id: {
+      competitionId: {
         type: Sequelize.INTEGER,
         unique: 'uniqueDonationCompetition',
         references: { model: 'competitions', key: 'id'}
@@ -35,7 +35,7 @@ module.exports = {
     }, {
       uniqueKeys: {
         uniqueDonationCompetition: {
-          fields: ['user_email', 'competition_id']
+          fields: ['user_email', 'competitionId']
         }
       }
     });
