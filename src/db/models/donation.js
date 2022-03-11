@@ -6,12 +6,8 @@ module.exports = (sequelize, DataTypes) => {
   class donation extends Model {
     static associate(models) {
       this.belongsTo(models.competitionTeam)
-      
-      this.belongsTo(models.competition)
 
-      this.belongsTo(models.team, {
-        through: models.competitionTeam
-      })
+      this.belongsTo(models.competition)
     }
   }
   donation.init({

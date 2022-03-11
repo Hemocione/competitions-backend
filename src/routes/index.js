@@ -28,27 +28,27 @@ router.get("/:id/ranking", async (req, res, next) => {
   }
 });
 
-router.post('/:id/donations', (req, res, next) => {
-  const id = parseInt(req.params.id)
-  if (!Number.isInteger(id)) {
+router.post('/:id/donations', async (req, res, next) => {
+  const competitionId = parseInt(req.params.id)
+  if (!Number.isInteger(competitionId)) {
     return res.status(404).json({ "message": "Competição não encontrada." })
   }
 
   const { user_name, user_email, competitionTeamId } = req.body;
 
   try {
-    const competition = getCompetition(id)
+    const competition = await getCompetition(competitionId)
     if (competition === null) {
       return res.status(404).json({ message: "Competição não encontrada." })
     } else if (competition.dataValues.status != 2) {
       return res.status(422).json({ message: "Esta competição não está disponível para registro de doações."})
     } else {
-      console.log('retornado')
       try {
-        const donation = registerDonation(competitionId, competitionTeamId, user_name, user_email)
+        const donation = await registerDonation(competitionId, competitionTeamId, user_name, user_email)
         return res.status(201).json(donation)
       } catch(err) {
-        console.log(`Erro ${err} quando registrando doação.`)
+        console.log(`Erro [${err}] quando registrando doação.`)
+        return res.status(500).json({"message": "Erro ao tentar registrar a doação."})
       }
     }
     } catch (err) {

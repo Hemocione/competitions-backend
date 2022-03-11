@@ -5,17 +5,11 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class competitionTeam extends Model {
     static associate(models) {
-      this.belongsTo(models.team, {
-        foreignKey: 'teamId'
-      })
+      this.belongsTo(models.team)
 
-      this.belongsTo(models.competition, {
-        foreignKey: 'competitionId'
-      })
+      this.belongsTo(models.competition)
 
-      this.hasMany(models.donation, {
-        foreignKey: 'competitionTeamId'
-      })
+      this.hasMany(models.donation)
     }
   }
 

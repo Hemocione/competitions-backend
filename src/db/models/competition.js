@@ -5,9 +5,7 @@ const {
 module.exports = (sequelize, DataTypes) => {
   class competition extends Model {
     static associate(models) {
-      this.hasMany(models.competitionTeam, {
-        foreignKey: 'competitionId'
-      })
+      this.hasMany(models.competitionTeam)
 
       this.hasMany(models.donation)
     }
