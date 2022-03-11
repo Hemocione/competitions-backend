@@ -1,66 +1,60 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const router = express.Router();
-const competitionModel = require("../models/competition");
-const donationModel = require("../models/donation")
+const { getCompetitions, getCompetition, getCompetitionRanking } = require('../services/competitionService')
+const { registerDonation } = require('../services/donationService')
 
-router.get("/competitions", (req, res, next) => {
-  var query = {}
-  if (req.body.available) {
-    query['startAt'] = { $lte: Date.now() }
-    query['endAt'] = { $gte: Date.now() }
-  } else {
-    query['endAt'] = { $lt: Date.now() }
+router.get("/", async (req, res, next) => {
+  try {
+    const competitions = await getCompetitions()
+    res.status(200).json(competitions);
+  } catch (err) {
+    res.status(500).json({ "message": "Ocorreu um erro inesperado, desculpe pelo transtorno."}) 
+    console.log(err)
   }
-  competitions = competitionModel.find(query).exec();
-  competitions
-    .then((competitions) => {
-      return res.status(200).json(competitions);
-    })
-    .catch((err) => {
-      next(err);
-    });
 });
 
-router.post('/donations', (req, res, next) => {
-  const validAttributes = (({ userName, userEmail, competition, institution, team}) => ({ userName, userEmail, competition, institution, team}))(req.body);
-  
-  const query = {
-    endAt: { $gte: Date.now() },
-    startAt: { $lte: Date.now() },
-    _id: validAttributes.competition
+router.get("/:id/ranking", async (req, res, next) => {
+  const id = parseInt(req.params.id)
+  if (!Number.isInteger(id)) {
+    return res.status(404).json({ "message": "Competição não encontrada." })
   }
 
-  validCompetition = competitionModel.findOne(query).exec()
-  validCompetition
-    .then((competition) => {
-      if (competition === null) {
-        return res.status(404).json({ message: "Competição não encontrada." })
-      } else {
-        const donation = new donationModel(validAttributes);
-        donation
-          .save()
-          .then((donation) => {
-            competition = competitionModel.findOneAndUpdate({_id : validAttributes.competition}, { $inc : {'partialDonationCount' : 1 }}).exec()
-            competition
-              .catch((err) => {
-                console.log(err)
-                console.log("error when incrementing competition " + validAttributes.competition)
-              })
-            return res.status(201).json(donation)
-          })
-          .catch((err) => {
-            if(err instanceof mongoose.mongo.MongoError && err.code === 11000) {
-              return res.status(422).json({ message: "Você já doou nesta competição." })
-            } else {
-              next(err);
-            }
-          })
-        }
-    })
-    .catch((err) => {
-      next(err);
-    });
-})
+  try {
+    const ranking = await getCompetitionRanking(id)
+    res.status(200).json(ranking)
+  } catch (err) {
+    res.status(404).json({ "message": "Competição não encontrada."}) 
+    console.log(err)
+  }
+});
 
-module.exports = { url: "/", router };
+router.post('/:id/donations', async (req, res, next) => {
+  const competitionId = parseInt(req.params.id)
+  if (!Number.isInteger(competitionId)) {
+    return res.status(404).json({ "message": "Competição não encontrada." })
+  }
+
+  const { user_name, user_email, competitionTeamId } = req.body;
+
+  try {
+    const competition = await getCompetition(competitionId)
+    if (competition === null) {
+      return res.status(404).json({ message: "Competição não encontrada." })
+    } else if (competition.dataValues.status != 2) {
+      return res.status(422).json({ message: "Esta competição não está disponível para registro de doações."})
+    } else {
+      try {
+        const donation = await registerDonation(competitionId, competitionTeamId, user_name, user_email)
+        return res.status(201).json(donation)
+      } catch(err) {
+        console.log(`Erro [${err}] quando registrando doação.`)
+        return res.status(500).json({"message": "Erro ao tentar registrar a doação."})
+      }
+    }
+    } catch (err) {
+      next(err)
+    }
+  }
+)
+
+module.exports = { url: "/competitions", router };
