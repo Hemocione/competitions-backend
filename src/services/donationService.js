@@ -6,7 +6,7 @@ const registerDonation = async (competitionId, competitionTeamId, user_name, use
       const createdDonation = await donation.create({
         user_name: user_name, user_email: user_email, competitionTeamId: competitionTeamId, competitionId: competitionId
       }, {transaction: t})
-      await competitionTeam.increment('donation_count', { where: { id: competitionTeamId }}, {transaction: t})
+      await competitionTeam.increment('donation_count', { where: { id: competitionTeamId, competitionId: competitionId }}, {transaction: t})
       return createdDonation
     })
   )
