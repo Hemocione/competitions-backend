@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { getCompetitions, getCompetition } = require('../services/competitionService')
+const { getCompetitions, getCompetition, getCompetitionRanking } = require('../services/competitionService')
+const { registerDonation } = require('../services/donationService')
 
 router.get("/", (req, res, next) => {
   getCompetitions().then((competitions) => {
@@ -12,57 +13,41 @@ router.get("/", (req, res, next) => {
   });
 });
 
-router.get("/:id", (req, res, next) => {
+router.get("/:id/ranking", (req, res, next) => {
   const id = parseInt(req.params.id)
   if (!Number.isInteger(id)) {
     return res.status(404).json({ "message": "Competição não encontrada." })
   }
-  console.log('oiiiiii lau')
 
-  getCompetition(id).then((competition) => {
-    console.log('oiee deu bom')
-    res.status(200).json(competition)
+  getCompetitionRanking(id).then((ranking) => {
+    res.status(200).json(ranking)
   }).catch((err) => {
-    console.log('oiee deu ruim')
     res.status(404).json({ "message": "Competição não encontrada."}) 
     console.log(err)
   });
 });
 
 router.post('/:id/donations', (req, res, next) => {
-  const validAttributes = (({ userName, userEmail, competition, institution, team }) => ({ userName, userEmail, competition, institution, team }))(req.body);
-
-  const query = {
-    endAt: { $gte: Date.now() },
-    startAt: { $lte: Date.now() },
-    Id: validAttributes.competition
+  const id = parseInt(req.params.id)
+  if (!Number.isInteger(id)) {
+    return res.status(404).json({ "message": "Competição não encontrada." })
   }
 
-  validCompetition = competitionModel.findOne(query).exec()
-  validCompetition
+  const { user_name, user_email, competitionTeamId } = req.body;
+
+  getCompetition(id)
     .then((competition) => {
       if (competition === null) {
         return res.status(404).json({ message: "Competição não encontrada." })
+      } else if (competition.dataValues.status != 2) {
+        return res.status(422).json({ message: "Esta competição não está disponível para registro de doações."})
       } else {
-        const donation = new donationModel(validAttributes);
-        donation
-          .save()
-          .then((donation) => {
-            competition = competitionModel.findOneAndUpdate({ Id: validAttributes.competition }, { $inc: { 'partialDonationCount': 1 } }).exec()
-            competition
-              .catch((err) => {
-                console.log(err)
-                console.log("error when incrementing competition " + validAttributes.competition)
-              })
-            return res.status(201).json(donation)
-          })
-          .catch((err) => {
-            if (err instanceof mongoose.mongo.MongoError && err.code === 11000) {
-              return res.status(422).json({ message: "Você já doou nesta competição." })
-            } else {
-              next(err);
-            }
-          })
+        registerDonation(competitionId, competitionTeamId, user_name, user_email)
+        .then((donation) => {
+          return res.status(201).json(donation)
+        }).catch((err) => {
+          console.log(`Erro ${err} quando registrando doação.`)
+        })
       }
     })
     .catch((err) => {

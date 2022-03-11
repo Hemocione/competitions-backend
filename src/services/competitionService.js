@@ -10,47 +10,58 @@ END`
 
 
 const getCompetitions = async () => {
+  const query = {
+    attributes: [
+      'id', 'name', 'start_at', 'end_at',
+      [sequelize.literal(statusCaseWhenClause), 'status']
+    ],
+    order: [
+      [sequelize.literal(statusCaseWhenClause), 'DESC'],
+      ['start_at', 'ASC']
+    ]
+  }
+
   return (
-    await competition.findAll({
-      attributes: [
-        'id', 'name', 'start_at', 'end_at',
-        [sequelize.literal(statusCaseWhenClause), 'status']
-      ],
-      order: [
-        [sequelize.literal(statusCaseWhenClause), 'DESC'],
-        ['start_at', 'ASC']
-      ]
-    })
+    await competition.findAll(query)
   )
 }
 
 const getCompetition = async (id) => {
+  const query = { 
+    attributes: [
+      'id', 'name',
+      [sequelize.literal(statusCaseWhenClause), 'status']
+    ],
+    where: { 
+      id: id
+    }
+  }
+
   return (
-    await competition.findOne({
-      attributes: [
-        'id', 'name',
-        [sequelize.literal(statusCaseWhenClause), 'status']
-      ],
-      where: { 
-        id: id
-      },
-      include: [
-        {
-          model: competitionTeam,
-          attributes: ['donation_count'],
-          include: [
-            {
-              model: team,
-              attributes: ['name']
-            }
-          ],
-        }
-      ],
-      order: [
-        [{ model: competitionTeam }, 'donation_count', 'desc']
-      ]
-    })
+    await competition.findOne(query)
   )
 }
 
-module.exports = { getCompetitions, getCompetition }
+const getCompetitionRanking = async (competitionId) => {
+  const query = {
+    attributes: [
+      'id', 'donation_count'
+    ],
+    where: {
+      competitionId: competitionId
+    },
+    include: {
+      model: team,
+      attributes: ['name', 'id']
+    },
+    order: [
+      ['donation_count', 'desc']
+    ]
+  }
+
+  return (
+    await competitionTeam.findAll(query)
+  )
+} 
+
+module.exports = { getCompetitions, getCompetition, getCompetitionRanking }
