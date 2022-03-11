@@ -12,10 +12,6 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.competition_team, {
         foreignKey: 'team_id'
       })
-
-      this.hasMany(model.donation, {
-        through: models.competition_team
-      })
     }
   }
   team.init({

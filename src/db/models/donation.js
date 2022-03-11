@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         foreignKey: 'competition_team_id',
       })
 
+      this.belongsTo(models.team, {
+        through: models.competition_team
+      })
+
       this.belongsTo(models.competition, {
         foreignKey: 'competition_id'
       })

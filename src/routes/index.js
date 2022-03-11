@@ -3,9 +3,8 @@ const router = express.Router();
 const { getCompetitions } = require('../services/competitionService')
 
 router.get("/competitions", (req, res, next) => {
-  console.log('oii')
   getCompetitions().then((competitions) => {
-    res.status(200).json(JSON.stringify(competitions));
+    res.status(200).json(competitions);
   })
   .catch((err) => {
     res.status(500).json({ "message": "Ocorreu um erro inesperado, desculpe pelo transtorno."}) 
