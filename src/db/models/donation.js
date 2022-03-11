@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       })
 
       this.belongsTo(models.competition, {
-        foreignKey: 'competitionId'
+        through: models.competitionTeam
       })
     }
   }
@@ -22,7 +22,6 @@ module.exports = (sequelize, DataTypes) => {
     user_name: DataTypes.STRING,
     user_email: DataTypes.STRING,
     competitionTeamId: DataTypes.INTEGER,
-    competitionId: DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'donation',

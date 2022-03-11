@@ -8,10 +8,6 @@ module.exports = (sequelize, DataTypes) => {
       this.hasMany(models.competitionTeam, {
         foreignKey: 'competitionId'
       })
-
-      this.hasMany(models.donation, {
-        foreignKey: 'competitionId'
-      })
     }
   }
   competition.init({
