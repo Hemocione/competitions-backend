@@ -10,6 +10,7 @@ module.exports = {
       },
       donation_count: {
         type: Sequelize.INTEGER,
+        default: 0
       },
       teamId: {
         type: Sequelize.INTEGER,
