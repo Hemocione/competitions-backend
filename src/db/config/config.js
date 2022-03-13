@@ -7,37 +7,37 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: "postgres",
-    timezone: '-03:00',
     "dialectOptions": {
       useUTC: false,
       "ssl": {
         require: true,
         rejectUnauthorized: false
       }
-    }
+    },
+    timezone: 'America/Sao_Paulo'
   },
   development: {
     use_env_variable: 'DATABASE_URL',
     dialect: "postgres",
-    timezone: '-03:00',
     "dialectOptions": {
       useUTC: false,
       "ssl": {
         require: true,
         rejectUnauthorized: false
       }
-    }
+    },
+    timezone: 'America/Sao_Paulo'
   },
   production: {
     use_env_variable: 'DATABASE_URL',
     dialect: "postgres",
-    timezone: '-03:00',
     "dialectOptions": {
       useUTC: false,
       "ssl": {
         require: true,
         rejectUnauthorized: false
       },
-    }
+    },
+    timezone: 'America/Sao_Paulo'
   }
 }
