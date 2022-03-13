@@ -8,12 +8,6 @@ const env = process.env.ENV || 'development';
 const config = require(__dirname + '/../config/config.js')[env];
 const db = {};
 
-// Fix bug where postgres would always turn datetimes to UTC
-var pg = require('pg');
-pg.types.setTypeParser(1082, 'text', function(text) {return text;});
-pg.types.setTypeParser(1184, 'text', function(text) {return text;});
-pg.types.setTypeParser(1114, 'text', function(text) {return text;});
-
 let sequelize;
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
