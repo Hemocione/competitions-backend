@@ -11,8 +11,10 @@ module.exports = {
       "ssl": {
         require: true,
         rejectUnauthorized: false
-      }
-    }
+      },
+      useUTC: false
+    },
+    timezone: 'America/Sao_Paulo'
   },
   development: {
     use_env_variable: 'DATABASE_URL',
@@ -21,8 +23,10 @@ module.exports = {
       "ssl": {
         require: true,
         rejectUnauthorized: false
-      }
-    }
+      },
+      useUTC: false
+    },
+    timezone: 'America/Sao_Paulo'
   },
   production: {
     use_env_variable: 'DATABASE_URL',
@@ -31,7 +35,9 @@ module.exports = {
       "ssl": {
         require: true,
         rejectUnauthorized: false
-      }
-    }
+      },
+      useUTC: false
+    },
+    timezone: 'America/Sao_Paulo'
   }
 }
