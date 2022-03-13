@@ -7,6 +7,7 @@ module.exports = {
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     dialect: "postgres",
+    timezone: '-03:00',
     "dialectOptions": {
       "ssl": {
         require: true,
@@ -17,6 +18,7 @@ module.exports = {
   development: {
     use_env_variable: 'DATABASE_URL',
     dialect: "postgres",
+    timezone: '-03:00',
     "dialectOptions": {
       "ssl": {
         require: true,
@@ -27,6 +29,7 @@ module.exports = {
   production: {
     use_env_variable: 'DATABASE_URL',
     dialect: "postgres",
+    timezone: '-03:00',
     "dialectOptions": {
       "ssl": {
         require: true,
