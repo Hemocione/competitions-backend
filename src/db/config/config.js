@@ -9,6 +9,7 @@ module.exports = {
     dialect: "postgres",
     timezone: '-03:00',
     "dialectOptions": {
+      useUTC: false,
       "ssl": {
         require: true,
         rejectUnauthorized: false
@@ -20,6 +21,7 @@ module.exports = {
     dialect: "postgres",
     timezone: '-03:00',
     "dialectOptions": {
+      useUTC: false,
       "ssl": {
         require: true,
         rejectUnauthorized: false
@@ -31,6 +33,7 @@ module.exports = {
     dialect: "postgres",
     timezone: '-03:00',
     "dialectOptions": {
+      useUTC: false,
       "ssl": {
         require: true,
         rejectUnauthorized: false
