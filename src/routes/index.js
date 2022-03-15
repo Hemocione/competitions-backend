@@ -32,15 +32,21 @@ const verifyToken = (token) => {
 
 }
 router.post('/:id/donations', async (req, res, next) => {
-  const googleRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
-    method: 'POST',
-    body: JSON.stringify({
-      "secret": process.env.SECRET_KEY,
-      "response": req.params['g-recaptcha-response'],
+  try {
+    const googleRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
+      method: 'POST',
+      body: JSON.stringify({
+        "secret": process.env.SECRET_KEY,
+        "response": req.params['g-recaptcha-response'],
+      })
     })
-  }).json()
-  if (!googleRes['success']) {
-    return res.status(404).json({ "message": "Captcha falhou." })
+    const googleResJson = await googleRes.json()
+    if (!googleResJson['success']) {
+      return res.status(403).json({ "message": "Erro de captcha. Você é um robô?" })
+    }
+  } catch (err) {
+    console.log(`Erro [${err}] ao verificar captcha.`)
+    return res.status(500).json({ "message": "Ocorreu um erro inesperado." })
   }
 
   const competitionId = parseInt(req.params.id)
