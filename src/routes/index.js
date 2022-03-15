@@ -1,8 +1,8 @@
+import fetch from 'node-fetch';
 const express = require("express");
 const router = express.Router();
 const { getCompetitions, getCompetition, getCompetitionRanking } = require('../services/competitionService')
 const { registerDonation } = require('../services/donationService')
-const { fetch } = require('node-fetch')
 
 router.get("/", async (req, res, next) => {
   try {
