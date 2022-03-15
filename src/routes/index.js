@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const { getCompetitions, getCompetition, getCompetitionRanking } = require('../services/competitionService')
 const { registerDonation } = require('../services/donationService')
+const { fetch } = require('node-fetch')
 
 router.get("/", async (req, res, next) => {
   try {
@@ -28,9 +29,6 @@ router.get("/:id/ranking", async (req, res, next) => {
   }
 });
 
-const verifyToken = (token) => {
-
-}
 router.post('/:id/donations', async (req, res, next) => {
   try {
     const googleRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
