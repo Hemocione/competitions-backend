@@ -32,10 +32,10 @@ router.post('/:id/donations', async (req, res, next) => {
   try {
     const googleRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
       method: 'POST',
-      body: {
+      body: JSON.stringify({
         "secret": process.env.SECRET_KEY,
         "response": req.params.body['g-recaptcha-response'],
-      }
+      })
     })
     const googleResJson = await googleRes.json()
     console.log(googleResJson)
