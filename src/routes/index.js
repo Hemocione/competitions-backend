@@ -71,8 +71,8 @@ router.post('/:id/donations', async (req, res, next) => {
       }
     }
   } catch (err) {
-    console.log(err)
-    next(err)
+    console.log(`Erro [${err}] quando registrando doação.`)
+    return res.status(500).json({ "message": "Erro ao tentar registrar a doação." })
   }
 }
 )
