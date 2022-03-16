@@ -32,12 +32,13 @@ router.post('/:id/donations', async (req, res, next) => {
   try {
     const googleRes = await fetch(`https://www.google.com/recaptcha/api/siteverify`, {
       method: 'POST',
-      body: JSON.stringify({
+      body: {
         "secret": process.env.SECRET_KEY,
         "response": req.params.body['g-recaptcha-response'],
-      })
+      }
     })
     const googleResJson = await googleRes.json()
+    console.log(googleResJson)
     if (!googleResJson['success']) {
       console.log(`Captcha inválido: ${req.params.body['g-recaptcha-response']} - error: ${googleResJson}`)
       return res.status(403).json({ "message": "Erro de captcha. Você é um robô?" })
@@ -70,6 +71,7 @@ router.post('/:id/donations', async (req, res, next) => {
       }
     }
   } catch (err) {
+    console.log(err)
     next(err)
   }
 }
