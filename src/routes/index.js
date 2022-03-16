@@ -34,11 +34,12 @@ router.post('/:id/donations', async (req, res, next) => {
       method: 'POST',
       body: JSON.stringify({
         "secret": process.env.SECRET_KEY,
-        "response": req.params['g-recaptcha-response'],
+        "response": req.params.body['g-recaptcha-response'],
       })
     })
     const googleResJson = await googleRes.json()
     if (!googleResJson['success']) {
+      console.log(`Captcha inválido: ${req.params.body['g-recaptcha-response']} - error: ${googleResJson}`)
       return res.status(403).json({ "message": "Erro de captcha. Você é um robô?" })
     }
   } catch (err) {
