@@ -5,6 +5,7 @@ const mongoSanitize = require("express-mongo-sanitize");
 const helmet = require("helmet");
 const xssEscape = require("../middlewares/xssEscape");
 const contentType = require("../middlewares/contentType");
+const requestLogging = require("../middlewares/requestsLogging");
 
 //Initializes express
 const init = ({ expressApp: app }) =>
@@ -13,6 +14,7 @@ const init = ({ expressApp: app }) =>
       origin: "*",
       optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
     };
+    app.use(requestLogging);
     app.use(cors(corsOptions));
     app.use(contentType);
     app.use(express.json());
