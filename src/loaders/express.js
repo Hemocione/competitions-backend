@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const xssEscape = require("../middlewares/xssEscape");
 const contentType = require("../middlewares/contentType");
 const requestLogging = require("../middlewares/requestsLogging");
+const { errorsMiddleware, notFoundRoute } = require("../middlewares/errorsMiddleware");
 
 //Initializes express
 const init = ({ expressApp: app }) =>
@@ -33,15 +34,10 @@ const init = ({ expressApp: app }) =>
     } catch (err) {
       reject(err);
     }
-    //404 error handler middleware
-    app.use(function (req, res, next) {
-      res.status(404).json({ error: "Route NOT FOUND" });
-    });
 
-    //Uncaught error handler middleware
-    app.use(function (err, req, res, next) {
-      res.status(500).send({ error: "Unexpected Error" });
-    });
+    app.use(errorsMiddleware);
+    app.use(notFoundRoute);
+
     resolve();
   });
 
