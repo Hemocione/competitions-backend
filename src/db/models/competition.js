@@ -13,7 +13,9 @@ module.exports = (sequelize, DataTypes) => {
   competition.init({
     name: DataTypes.STRING,
     start_at: DataTypes.DATE,
-    end_at: DataTypes.DATE
+    end_at: DataTypes.DATE,
+    unpublished: DataTypes.BOOLEAN,
+    publication_date: DataTypes.DATE,
   }, {
     sequelize,
     modelName: 'competition',

@@ -5,7 +5,8 @@ const { registerDonation } = require('../services/donationService')
 
 router.get("/", async (req, res, next) => {
   try {
-    const competitions = await getCompetitions()
+    const includeUnpublished = req.query.includeUnpublished === 'true'
+    const competitions = await getCompetitions(includeUnpublished)
     res.status(200).json(competitions);
   } catch (err) {
     res.status(500).json({ "message": "Ocorreu um erro inesperado, desculpe pelo transtorno." })

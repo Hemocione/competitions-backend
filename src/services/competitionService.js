@@ -9,16 +9,22 @@ CASE
 END`
 
 
-const getCompetitions = async () => {
+const getCompetitions = async (includeUnpublished=false) => {
   const query = {
     attributes: [
-      'id', 'name', 'start_at', 'end_at',
+      'id', 'name', 'start_at', 'end_at', 'publication_date',
       [sequelize.literal(statusCaseWhenClause), 'status']
     ],
     order: [
       [sequelize.literal(statusCaseWhenClause), 'DESC'],
       ['start_at', 'ASC']
-    ]
+    ],
+  }
+
+  if (!includeUnpublished) {
+    query.where = {
+      published: true
+    }
   }
 
   return (
