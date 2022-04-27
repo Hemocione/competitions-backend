@@ -1,8 +1,9 @@
 const { competition, sequelize, competitionTeam, team } = require('../db/models');
 
-// status 2 = ativo, 1 = upcoming, 0 = finalizado
+// status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
 CASE
+  WHEN NOT published AND publication_date IS NULL THEN 3
   WHEN CURRENT_TIMESTAMP > end_at THEN 0
   WHEN CURRENT_TIMESTAMP < start_at THEN 1
   ELSE 2
