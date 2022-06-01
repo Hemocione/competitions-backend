@@ -1,4 +1,9 @@
-const { competition, sequelize, competitionTeam, team } = require('../db/models');
+const {
+  competition,
+  sequelize,
+  competitionTeam,
+  team,
+} = require('../db/models')
 
 // status 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
@@ -8,60 +13,53 @@ CASE
   ELSE 2
 END`
 
-
 const getCompetitions = async () => {
   const query = {
     attributes: [
-      'id', 'name', 'start_at', 'end_at',
-      [sequelize.literal(statusCaseWhenClause), 'status']
+      'id',
+      'name',
+      'start_at',
+      'end_at',
+      [sequelize.literal(statusCaseWhenClause), 'status'],
     ],
     order: [
       [sequelize.literal(statusCaseWhenClause), 'DESC'],
-      ['start_at', 'ASC']
-    ]
+      ['start_at', 'ASC'],
+    ],
   }
 
-  return (
-    await competition.findAll(query)
-  )
+  return await competition.findAll(query)
 }
 
 const getCompetition = async (id) => {
-  const query = { 
+  const query = {
     attributes: [
-      'id', 'name',
-      [sequelize.literal(statusCaseWhenClause), 'status']
+      'id',
+      'name',
+      [sequelize.literal(statusCaseWhenClause), 'status'],
     ],
-    where: { 
-      id: id
-    }
+    where: {
+      id: id,
+    },
   }
 
-  return (
-    await competition.findOne(query)
-  )
+  return await competition.findOne(query)
 }
 
 const getCompetitionRanking = async (competitionId) => {
   const query = {
-    attributes: [
-      'id', 'donation_count'
-    ],
+    attributes: ['id', 'donation_count'],
     where: {
-      competitionId: competitionId
+      competitionId: competitionId,
     },
     include: {
       model: team,
-      attributes: ['name', 'id']
+      attributes: ['name', 'id'],
     },
-    order: [
-      ['donation_count', 'desc']
-    ]
+    order: [['donation_count', 'desc']],
   }
 
-  return (
-    await competitionTeam.findAll(query)
-  )
-} 
+  return await competitionTeam.findAll(query)
+}
 
 module.exports = { getCompetitions, getCompetition, getCompetitionRanking }

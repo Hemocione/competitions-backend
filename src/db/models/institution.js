@@ -1,7 +1,5 @@
-'use strict';
-const {
-  Model,
-} = require('sequelize');
+'use strict'
+const { Model } = require('sequelize')
 
 module.exports = (sequelize, DataTypes) => {
   class institution extends Model {
@@ -10,38 +8,38 @@ module.exports = (sequelize, DataTypes) => {
     }
 
     static getRankingByCompetitionId(competitionId) {
-      const id = parseInt(competitionId);
-      if (!Number.isInteger(id))
-        return [];
+      const id = parseInt(competitionId)
+      if (!Number.isInteger(id)) return []
 
       const query = {
         attributes: {
           include: [
-              [
-                  sequelize.literal(`(SELECT SUM(donation_count) 
+            [
+              sequelize.literal(`(SELECT SUM(donation_count) 
                                          FROM "competitionTeams" AS competition
                                          INNER JOIN teams AS team ON team.id = competition."teamId" AND institution.id = team."institutionId"
-                                         WHERE competition."competitionId" = ${id})`
-                  ), 'total_donations'
-              ],
+                                         WHERE competition."competitionId" = ${id})`),
+              'total_donations',
+            ],
           ],
-          exclude: [ 'createdAt', 'updatedAt'],
+          exclude: ['createdAt', 'updatedAt'],
         },
-        order: [
-            [sequelize.literal('total_donations'), 'DESC']
-        ]
+        order: [[sequelize.literal('total_donations'), 'DESC']],
       }
 
-      return this.findAll(query);
+      return this.findAll(query)
     }
   }
 
-  institution.init({
-    name: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'institution',
-  });
+  institution.init(
+    {
+      name: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: 'institution',
+    }
+  )
 
-  return institution;
-};
+  return institution
+}

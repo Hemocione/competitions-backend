@@ -1,4 +1,4 @@
-const fetch = require('node-fetch');
+const fetch = require('node-fetch')
 
 const loader = () => {
   if (!globalThis.fetch) {
@@ -6,4 +6,4 @@ const loader = () => {
   }
 }
 
-module.exports = loader;
+module.exports = loader
