@@ -33,7 +33,6 @@ const init = (config: { expressApp: Express }) =>
     try {
       fs.readdirSync('./src/routes').forEach(async (file) => {
         const { default: r } = await import(`../routes/${file.slice(0, -3)}`)
-        console.log(r)
         app.use(r.url, r.router)
       })
     } catch (err) {

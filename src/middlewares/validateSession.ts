@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express'
 
 import HemocioneAPI from '../helpers/HemocioneAPI'
 
+// TODO: plug this middleware into private routes
+
 async function validateSession(
   req: Request,
   res: Response,
