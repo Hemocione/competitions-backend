@@ -6,7 +6,7 @@
   "scripts": {
     "migrate": "yarn sequelize-cli db:migrate",
     "build": "tsc --build",
-    "start": "nodemon -e --exec 'yarn build && node ./out/app.js'",
+    "start": "nodemon -e ts --exec 'yarn build && node ./out/app.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hemocione INC.",
