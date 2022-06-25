@@ -2,16 +2,18 @@
   "name": "competitions-backend",
   "version": "1.0.0",
   "description": "Hemocione Competitions Backend",
-  "main": "src/app.js",
+  "main": "out/app.js",
   "scripts": {
-    "build": "npx sequelize-cli db:migrate",
-    "start": "node src/app.js",
+    "migrate": "yarn sequelize-cli db:migrate",
+    "build": "tsc --build",
+    "start": "nodemon -e --exec 'yarn build && node ./out/app.js'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hemocione INC.",
   "license": "ISC",
   "dependencies": {
     "@sequelize/core": "^7.0.0-alpha.10",
+    "axios": "^0.27.2",
     "cors": "^2.8.5",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
@@ -24,5 +26,12 @@
     "sequelize": "^6.17.0",
     "sequelize-cli": "^6.4.1",
     "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
+    "@types/node-fetch": "^2.6.1",
+    "@types/pg": "^8.6.5",
+    "nodemon": "^2.0.16"
   }
 }
