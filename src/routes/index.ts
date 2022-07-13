@@ -1,4 +1,6 @@
 import express from 'express'
+import { NotFoundError, Unexpected } from '../errors'
+import funcWrapper from '../helpers/funcWrapper'
 import {
   getCompetitions,
   getCompetition,
@@ -7,40 +9,35 @@ import {
 import { registerDonation } from '../services/donationService'
 const router = express.Router()
 
-router.get('/', async (req, res, next) => {
-  try {
+router.get(
+  '/',
+  funcWrapper(async (context) => {
     const competitions = await getCompetitions()
-    res.status(200).json(competitions)
-  } catch (err) {
-    res.status(500).json({
-      message: 'Ocorreu um erro inesperado, desculpe pelo transtorno.',
-    })
-    console.log(err)
-  }
-})
+    return competitions
+  })
+)
 
-router.get('/:id/ranking', async (req, res, next) => {
-  const id = parseInt(req.params.id)
-  if (!Number.isInteger(id)) {
-    return res.status(404).json({ message: 'Competição não encontrada.' })
-  }
+router.get(
+  '/:id/ranking',
+  funcWrapper(async (context) => {
+    const id = parseInt(context.req.params.id)
+    if (!Number.isInteger(id)) {
+      throw new NotFoundError('Competição não encontrada.')
+    }
 
-  try {
     const ranking = await getCompetitionRanking(id)
-    res.status(200).json(ranking)
-  } catch (err) {
-    res.status(404).json({ message: 'Competição não encontrada.' })
-    console.log(err)
-  }
-})
+    return ranking
+  })
+)
 
-router.post('/:id/donations', async (req, res, next) => {
-  try {
+router.post(
+  '/:id/donations',
+  funcWrapper(async (context) => {
     const googleRes = await fetch(
       `https://www.google.com/recaptcha/api/siteverify`,
       {
         method: 'POST',
-        body: `secret=${process.env.SECRET_KEY}&response=${req.body['g-recaptcha-response']}`,
+        body: `secret=${process.env.SECRET_KEY}&response=${context.req.body['g-recaptcha-response']}`,
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       }
     )
@@ -48,58 +45,42 @@ router.post('/:id/donations', async (req, res, next) => {
     if (!googleResJson['success']) {
       console.log(
         `Captcha inválido: ${
-          req.body['g-recaptcha-response']
+          context.req.body['g-recaptcha-response']
         } - error: ${JSON.stringify(googleResJson)}`
       )
-      return res
-        .status(403)
-        .json({ message: 'Erro de captcha. Você é um robô?' })
+      throw new Unexpected('Erro de captcha. Você é um robô?')
     }
-  } catch (err) {
-    console.log(`Erro [${err}] ao verificar captcha.`)
-    return res.status(500).json({ message: 'Ocorreu um erro inesperado.' })
-  }
 
-  const competitionId = parseInt(req.params.id)
-  if (!Number.isInteger(competitionId)) {
-    return res.status(404).json({ message: 'Competição não encontrada.' })
-  }
-
-  const { user_name, user_email, competitionTeamId } = req.body
-
-  try {
-    const competition = await getCompetition(competitionId)
-    if (competition === null) {
-      return res.status(404).json({ message: 'Competição não encontrada.' })
+    const competitionId = parseInt(context.req.params.id)
+    if (!Number.isInteger(competitionId)) {
+      throw new NotFoundError('Competição não encontrada.')
     }
-    // else if (competition.getDataValue.status != 2) {
-    //   return res.status(422).json({
-    //     message:
-    //       'Esta competição não está disponível para registro de doações.',
-    //   })
-    // }
-    else {
-      try {
-        const donation = await registerDonation(
-          competitionId,
-          competitionTeamId,
-          user_name,
-          user_email
-        )
-        return res.status(201).json(donation)
-      } catch (err) {
-        console.log(`Erro [${err}] quando registrando doação.`)
-        return res
-          .status(500)
-          .json({ message: 'Erro ao tentar registrar a doação.' })
+
+    const { user_name, user_email, competitionTeamId } = context.req.body
+
+    try {
+      const competition = await getCompetition(competitionId)
+      if (competition === null) {
+        throw new NotFoundError('Competição não encontrada.')
+      } else {
+        try {
+          const donation = await registerDonation(
+            competitionId,
+            competitionTeamId,
+            user_name,
+            user_email
+          )
+          return donation
+        } catch (err) {
+          console.log(`Erro [${err}] quando registrando doação.`)
+          throw new Unexpected('Erro ao tentar registrar a doação.')
+        }
       }
+    } catch (err) {
+      console.log(`Erro [${err}] quando registrando doação.`)
+      throw new Unexpected('Erro ao tentar registrar a doação.')
     }
-  } catch (err) {
-    console.log(`Erro [${err}] quando registrando doação.`)
-    return res
-      .status(500)
-      .json({ message: 'Erro ao tentar registrar a doação.' })
-  }
-})
+  })
+)
 
 export default { url: '/competitions', router }

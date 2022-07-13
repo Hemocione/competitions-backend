@@ -5,93 +5,110 @@ import {
   editCompetition,
   deleteCompetition,
 } from '../services/competitionService'
-import errors from '../errors'
+import { Unexpected, NotFoundError } from '../errors'
 import {
   assignTeamToCompetition,
   unassignTeamFromCompetition,
 } from '../services/teamService'
+import funcWrapper from '../helpers/funcWrapper'
+import { Context } from '../types'
+import auth from '../middlewares/auth'
+import validateRoles from '../middlewares/validateRoles'
 
 const router = express.Router()
 
-router.get('/competitions/:id/rankings', async (req, res, next) => {
-  const id = parseInt(req.params.id)
-  if (!Number.isInteger(id))
-    return next(new errors.NotFoundError('Competition not Found!'))
+router.get(
+  '/competitions/:id/rankings',
+  funcWrapper(async (context: Context) => {
+    const id = parseInt(context.req.params.id)
+    if (!Number.isInteger(id)) throw new NotFoundError('Competition not Found!')
 
-  const result = await getRankingByCompetitionId(id)
-  res.status(200).json(result)
-})
+    const result = await getRankingByCompetitionId(id)
+    return result
+  })
+)
 
-router.post('/competitions', async (req, res, next) => {
-  const { name, startsAt, endsAt } = req.body
+router.post(
+  '/competitions',
+  auth,
+  validateRoles(['admin']),
+  funcWrapper(async (context) => {
+    const { name, startsAt, endsAt } = context.req.body
 
-  if (!name || !startsAt || !endsAt)
-    return next(new errors.Unexpected('Bad Request!'))
+    if (!name || !startsAt || !endsAt) throw new Unexpected('Bad Request!')
 
-  const result = await createCompetition(name, startsAt, endsAt)
+    const result = await createCompetition(name, startsAt, endsAt)
 
-  res.status(200).json(result)
-})
+    return result
+  })
+)
 
 router.post(
   '/competitions/:competitionId/assign/:teamId',
-  async (req, res, next) => {
-    const teamId = parseInt(req.params.teamId)
-    const competitionId = parseInt(req.params.competitionId)
+  auth,
+  validateRoles(['admin']),
+  funcWrapper(async (context) => {
+    const params = context.req.params
+    const teamId = parseInt(params.teamId)
+    const competitionId = parseInt(params.competitionId)
 
-    if (!teamId || !competitionId)
-      return next(new errors.Unexpected('Bad Request!'))
+    if (!teamId || !competitionId) throw new Unexpected('Bad Request!')
 
     if (!Number.isInteger(teamId) || !Number.isInteger(competitionId))
-      return next(new errors.NotFoundError('Bad Request!'))
+      throw new NotFoundError('Bad Request!')
 
     const result = await assignTeamToCompetition(teamId, competitionId)
 
-    res.status(200).json(result)
-  }
+    return result
+  })
 )
 
 router.delete(
   '/competitions/:competitionId/assign/:teamId',
-  async (req, res, next) => {
-    try {
-      const teamId = parseInt(req.params.teamId)
-      const competitionId = parseInt(req.params.competitionId)
+  auth,
+  validateRoles(['admin']),
+  funcWrapper(async (context) => {
+    const params = context.req.params
+    const teamId = parseInt(params.teamId)
+    const competitionId = parseInt(params.competitionId)
 
-      if (!teamId || !competitionId)
-        return next(new errors.Unexpected('Bad Request!'))
+    if (!teamId || !competitionId) throw new Unexpected('Bad Request!')
 
-      if (!Number.isInteger(teamId) || !Number.isInteger(competitionId))
-        return next(new errors.NotFoundError('Bad Request!'))
+    if (!Number.isInteger(teamId) || !Number.isInteger(competitionId))
+      throw new NotFoundError('Bad Request!')
 
-      const result = await unassignTeamFromCompetition(teamId, competitionId)
-
-      res.status(200).json(result)
-    } catch (error) {
-      console.log(error)
-      res.status(500).json(error)
-    }
-  }
+    const result = await unassignTeamFromCompetition(teamId, competitionId)
+    return result
+  })
 )
 
-router.put('/competitions/:id', async (req, res, next) => {
-  const { id } = req.params
-  const { name, startsAt, endsAt } = req.body
+router.put(
+  '/competitions/:id',
+  auth,
+  validateRoles(['admin']),
+  funcWrapper(async (context) => {
+    const { id } = context.req.params
+    const { name, startsAt, endsAt } = context.req.body
 
-  if (!name || !startsAt || !endsAt)
-    return next(new errors.Unexpected('Bad Request!'))
+    if (!name || !startsAt || !endsAt) throw new Unexpected('Bad Request!')
 
-  const result = await editCompetition(id, name, startsAt, endsAt)
+    const result = await editCompetition(id, name, startsAt, endsAt)
 
-  res.status(200).json(result)
-})
+    return result
+  })
+)
 
-router.delete('/competitions/:id', async (req, res, next) => {
-  const { id } = req.params
+router.delete(
+  '/competitions/:id',
+  auth,
+  validateRoles(['admin']),
+  funcWrapper(async (context) => {
+    const { id } = context.req.params
 
-  const result = await deleteCompetition(id)
+    const result = await deleteCompetition(id)
 
-  res.status(200).json(result)
-})
+    return result
+  })
+)
 
 export default { url: '/v1', router }

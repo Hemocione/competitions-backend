@@ -1,31 +1,29 @@
-class NotFoundError extends Error {
-  public statusCode: number
+export class CompetitionError extends Error {
+  public status
 
-  constructor(message: string) {
-    super()
-    this.message = message || 'Not found.'
-    this.statusCode = 404
+  constructor(message: string, status: number) {
+    super(message)
+    this.status = status
   }
 }
 
-class Unexpected extends Error {
-  public statusCode: number
-
+export class NotFoundError extends CompetitionError {
   constructor(message: string) {
-    super()
-    this.message = message || 'Unexpected error.'
-    this.statusCode = 500
+    const statusCode = 404
+    super(message, statusCode)
   }
 }
 
-class Unauthorized extends Error {
-  public statusCode: number
-
+export class Unauthorized extends CompetitionError {
   constructor(message: string) {
-    super()
-    this.message = message || 'Unauthorized.'
-    this.statusCode = 401
+    const statusCode = 401
+    super(message, statusCode)
   }
 }
 
-export default { NotFoundError, Unexpected, Unauthorized }
+export class Unexpected extends CompetitionError {
+  constructor(message: string) {
+    const statusCode = 500
+    super(message, statusCode)
+  }
+}

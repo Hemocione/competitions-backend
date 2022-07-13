@@ -19,13 +19,13 @@ class HemocioneAPI {
   async validateToken(token: string) {
     const configs = {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: token,
       },
     }
 
     const response = await this.request('get', '/users/validate-token', configs)
 
-    return response
+    return response.user
   }
 
   async request(

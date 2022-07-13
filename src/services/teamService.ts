@@ -1,7 +1,14 @@
 import models from '../db/models'
+import { NotFoundError, Unexpected } from '../errors'
 
 export const createTeam = async (name: string, institutionId: number) => {
   return await models.sequelize.transaction(async (t) => {
+    const duplicatedTeam = await models.team.findOne({
+      where: { institutionId, name },
+    })
+    if (duplicatedTeam)
+      throw new Unexpected(`O nome '${name}' já está sendo utilizado`)
+
     const createdTeam = await models.team.create(
       { name, institutionId },
       { transaction: t }
@@ -16,20 +23,26 @@ export const editTeam = async (
   institutionId: number
 ) => {
   return await models.sequelize.transaction(async (t) => {
+    const duplicatedTeam = await models.team.findOne({
+      where: { institutionId, name },
+    })
+    if (duplicatedTeam)
+      throw new Unexpected(`O nome '${name}' já está sendo utilizado`)
+
     const teamToEdit = await models.team.findOne({
       where: { id, institutionId },
     })
-    if (!teamToEdit) throw new Error('Team not found')
+    if (!teamToEdit) throw new NotFoundError('Time não encontrado')
 
     teamToEdit.setAttributes({ name })
     return await teamToEdit.save({ transaction: t })
   })
 }
 
-export const deleteTeam = async (id: number) => {
+export const deleteTeam = async (id: number, institutionId: number) => {
   return await models.sequelize.transaction(async (t) => {
     const deletedTeam = await models.team.destroy({
-      where: { id },
+      where: { id, institutionId },
       transaction: t,
     })
     return deletedTeam

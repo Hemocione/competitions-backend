@@ -13,7 +13,7 @@ import {
 
 //Initializes express
 const init = (config: { expressApp: Express }) =>
-  new Promise((resolve, reject) => {
+  new Promise(async (resolve, reject) => {
     const app = config.expressApp
     const corsOptions = {
       origin: '*',
@@ -31,15 +31,16 @@ const init = (config: { expressApp: Express }) =>
 
     //loads every route file
     try {
-      fs.readdirSync('./src/routes').forEach(async (file) => {
+      const files = fs.readdirSync('./src/routes')
+      for (const file of files) {
         const { default: r } = await import(`../routes/${file.slice(0, -3)}`)
         app.use(r.url, r.router)
-      })
+      }
     } catch (err) {
       reject(err)
     }
+    app.use(errorsMiddleware)
 
-    // app.use(errorsMiddleware)
     // app.use(notFoundRoute)
 
     resolve(true)

@@ -6,8 +6,11 @@ export function errorsMiddleware(
   res: Response,
   _: any
 ) {
+  console.log('errorsMiddleware', 'reached here', err)
   res.header('Content-Type', 'application/json')
-  res.status(err.statusCode || 500).send(JSON.stringify(err, null, 4)) // pretty print
+  res.status(err.status || 500).json({
+    message: err.message,
+  })
 }
 
 export function notFoundRoute(req: Request, res: Response, _: any) {
