@@ -13,8 +13,8 @@ const router = express.Router()
 router.get(
   '/',
   funcWrapper(async (context) => {
-    const competitions = await getCompetitions()
-    return competitions
+    const includeUnpublished = context.req.query.includeUnpublished === 'true'
+    return await getCompetitions(includeUnpublished)
   })
 )
 
@@ -26,8 +26,7 @@ router.get(
       throw new NotFoundError('Competição não encontrada.')
     }
 
-    const ranking = await getCompetitionRanking(id)
-    return ranking
+    return await getCompetitionRanking(id)
   })
 )
 
@@ -68,13 +67,12 @@ router.post(
         throw new NotFoundError('Competição não encontrada.')
       } else {
         try {
-          const donation = await registerDonation(
+          return await registerDonation(
             competitionId,
             competitionTeamId,
             user_name,
             user_email
           )
-          return donation
         } catch (err) {
           console.log(`Erro [${err}] quando registrando doação.`)
           throw new Unexpected('Erro ao tentar registrar a doação.')

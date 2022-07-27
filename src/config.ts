@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-import { Options, Dialect } from 'sequelize'
+import { Dialect } from 'sequelize'
 
 function getEnvVariable(property: string, defaultValue: string): string {
   const value = process.env[property]
@@ -60,8 +60,6 @@ if (defaultConfigs.environment === 'local') {
     },
   }
 }
-
-const a: Options = {}
 
 export function isLocalConfigs(
   configs: DevelopmentConfigs | LocalConfigs

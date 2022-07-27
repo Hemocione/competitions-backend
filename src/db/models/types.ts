@@ -24,6 +24,8 @@ export type CompetitionAttributes = {
   end_at: Date
   createdAt: Date
   updatedAt: Date
+  published: boolean
+  publication_date: Date | null
 }
 
 export type InstitutionAttributes = {

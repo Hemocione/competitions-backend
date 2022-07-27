@@ -5,15 +5,16 @@ import {
   CompetitionTeamAttributes,
 } from '../db/models/types'
 
-// status 2 = ativo, 1 = upcoming, 0 = finalizado
+// status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
 CASE
+  WHEN NOT published AND publication_date IS NULL THEN 3
   WHEN CURRENT_TIMESTAMP > end_at THEN 0
   WHEN CURRENT_TIMESTAMP < start_at THEN 1
   ELSE 2
 END`
 
-export const getCompetitions = async () => {
+export const getCompetitions = async (includeUnpublished = false) => {
   const query: FindOptions<CompetitionAttributes> = {
     attributes: [
       'id',
@@ -26,6 +27,12 @@ export const getCompetitions = async () => {
       [models.sequelize.literal(statusCaseWhenClause), 'DESC'],
       ['start_at', 'ASC'],
     ],
+  }
+
+  if (!includeUnpublished) {
+    query.where = {
+      published: true
+    }
   }
 
   return await models.competition.findAll(query)
@@ -68,15 +75,15 @@ export const createCompetition = async (
   endsAt: Date
 ) => {
   return await models.sequelize.transaction(async (t) => {
-    const createdCompetition = await models.competition.create(
+    return await models.competition.create(
       {
         name,
         start_at: startsAt,
         end_at: endsAt,
+        published: false,
       },
       { transaction: t }
     )
-    return createdCompetition
   })
 }
 
@@ -102,10 +109,9 @@ export const editCompetition = async (
 
 export const deleteCompetition = async (id: string) => {
   return await models.sequelize.transaction(async (t) => {
-    const deletedcompetition = await models.competition.destroy({
+    return await models.competition.destroy({
       where: { id },
       transaction: t,
     })
-    return deletedcompetition
   })
 }

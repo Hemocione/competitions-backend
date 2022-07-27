@@ -30,6 +30,8 @@ export default function init(sequelize: Sequelize) {
       end_at: DataTypes.DATE,
       createdAt: DataTypes.DATE,
       updatedAt: DataTypes.DATE,
+      published: DataTypes.BOOLEAN,
+      publication_date: DataTypes.DATE
     },
     {
       sequelize,
