@@ -1,4 +1,4 @@
-import { Model, DataTypes, Sequelize, FindOptions } from 'sequelize'
+import { Model, DataTypes, Sequelize } from 'sequelize'
 import {
   HemocioneModels,
   InstitutionAttributes,
@@ -14,27 +14,21 @@ export default function init(sequelize: Sequelize) {
       this.hasMany(models.team)
     }
 
-    static getRankingByCompetitionId(competitionId: any) {
+    static async getRankingByCompetitionId(competitionId: any) {
       const id = parseInt(competitionId)
       if (!Number.isInteger(id)) return []
 
-      const query: FindOptions = {
-        attributes: {
-          include: [
-            [
-              sequelize.literal(`(SELECT SUM(donation_count) 
-                                         FROM "competitionTeams" AS competition
-                                         INNER JOIN teams AS team ON team.id = competition."teamId" AND institution.id = team."institutionId"
-                                         WHERE competition."competitionId" = ${id})`),
-              'total_donations',
-            ],
-          ],
-          exclude: ['createdAt', 'updatedAt'],
-        },
-        order: [[sequelize.literal('total_donations'), 'DESC']],
-      }
+      const query = `SELECT CAST(sum(donation_count) as int) AS donation_count,
+                      teams."institutionId" AS institution_id,
+                      MAX(institutions.name) AS institution_name FROM "competitionTeams"
+                      LEFT JOIN teams ON "competitionTeams"."teamId" = "teams".id
+                      LEFT JOIN institutions ON teams."institutionId" = institutions.id
+                      WHERE "competitionId" = ${id}
+                      GROUP BY "institutionId"
+                      ORDER BY donation_count DESC`
 
-      return this.findAll(query)
+      const data = (await sequelize.query(query));
+      return data[0]
     }
   }
   institution.init(
