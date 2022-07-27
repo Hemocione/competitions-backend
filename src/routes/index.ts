@@ -7,6 +7,7 @@ import {
   getCompetitionRanking,
 } from '../services/competitionService'
 import { registerDonation } from '../services/donationService'
+import axios from "axios";
 const router = express.Router()
 
 router.get(
@@ -33,15 +34,18 @@ router.get(
 router.post(
   '/:id/donations',
   funcWrapper(async (context) => {
-    const googleRes = await fetch(
-      `https://www.google.com/recaptcha/api/siteverify`,
+    const { data: googleResJson } = await axios.post(`https://www.google.com/recaptcha/api/siteverify`,
+      {},
       {
-        method: 'POST',
-        body: `secret=${process.env.SECRET_KEY}&response=${context.req.body['g-recaptcha-response']}`,
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        params: {
+          secret: process.env.SECRET_KEY,
+          response: context.req.body['g-recaptcha-response']
+        }
       }
     )
-    const googleResJson = await googleRes.json()
     if (!googleResJson['success']) {
       console.log(
         `Captcha inválido: ${
