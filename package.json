@@ -4,6 +4,7 @@
   "description": "Hemocione Competitions Backend",
   "main": "src/app.js",
   "scripts": {
+    "dev": "nodemon src/app.js",
     "build": "npx sequelize-cli db:migrate",
     "start": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -24,5 +25,8 @@
     "sequelize": "^6.17.0",
     "sequelize-cli": "^6.4.1",
     "validator": "^13.7.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.19"
   }
 }
