@@ -1,6 +1,7 @@
 'use strict';
 const {
   Model,
+  QueryTypes
 } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
@@ -14,25 +15,22 @@ module.exports = (sequelize, DataTypes) => {
       if (!Number.isInteger(id))
         return [];
 
-      const query = {
-        attributes: {
-          include: [
-              [
-                  sequelize.literal(`(SELECT SUM(donation_count) 
-                                         FROM "competitionTeams" AS competition
-                                         INNER JOIN teams AS team ON team.id = competition."teamId" AND institution.id = team."institutionId"
-                                         WHERE competition."competitionId" = ${id})`
-                  ), 'total_donations'
-              ],
-          ],
-          exclude: [ 'createdAt', 'updatedAt'],
-        },
-        order: [
-            [sequelize.literal('total_donations'), 'DESC']
-        ]
-      }
+      const query = ` SELECT CAST(sum(donation_count) as int) AS donation_count,
+                      teams."institutionId" AS id,
+                      MAX(institutions.name) AS name FROM "competitionTeams"
+                      LEFT JOIN teams ON "competitionTeams"."teamId" = "teams".id
+                      LEFT JOIN institutions ON teams."institutionId" = institutions.id
+                      WHERE "competitionId" = ${competitionId}
+                      GROUP BY teams."institutionId"
+                      ORDER BY donation_count desc`
 
-      return this.findAll(query);
+      const result = sequelize.query(query, {
+        bind: {
+          competitionId: id
+        },
+        type: QueryTypes.SELECT
+      })
+      return result
     }
   }
 
