@@ -1,4 +1,4 @@
-const { competition, sequelize, competitionTeam, team } = require('../db/models');
+const { competition, sequelize } = require('../db/models');
 
 // status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
 const statusCaseWhenClause = `
@@ -34,12 +34,12 @@ const getCompetitions = async (includeUnpublished=false) => {
 }
 
 const getCompetition = async (id) => {
-  const query = { 
+  const query = {
     attributes: [
       'id', 'name',
       [sequelize.literal(statusCaseWhenClause), 'status']
     ],
-    where: { 
+    where: {
       id: id
     }
   }
@@ -50,25 +50,22 @@ const getCompetition = async (id) => {
 }
 
 const getCompetitionRanking = async (competitionId) => {
-  const query = {
-    attributes: [
-      'id', 'donation_count'
-    ],
-    where: {
-      competitionId: competitionId
-    },
-    include: {
-      model: team,
-      attributes: ['name', 'id']
-    },
-    order: [
-      ['donation_count', 'desc']
-    ]
-  }
+  const id = parseInt(competition)
+  if (!Number.isInteger(id))
+    return []
 
-  return (
-    await competitionTeam.findAll(query)
-  )
-} 
+  const query = ` SELECT "teamId" as id, donation_count, teams.name FROM "competitionTeams"
+                  LEFT JOIN teams ON "competitionTeams"."teamId" = teams.id
+                  WHERE "competitionId" = $competitionId
+                  ORDER BY donation_count desc`
+
+
+  return await sequelize.query(query, {
+    bind: {
+      competitionId
+    },
+    type: sequelize.QueryTypes.SELECT
+  })
+}
 
 module.exports = { getCompetitions, getCompetition, getCompetitionRanking }
