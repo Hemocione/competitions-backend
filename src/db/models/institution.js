@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
                       MAX(institutions.name) AS name FROM "competitionTeams"
                       LEFT JOIN teams ON "competitionTeams"."teamId" = "teams".id
                       LEFT JOIN institutions ON teams."institutionId" = institutions.id
-                      WHERE "competitionId" = ${competitionId}
+                      WHERE "competitionId" = $competitionId
                       GROUP BY teams."institutionId"
                       ORDER BY donation_count desc`
 
