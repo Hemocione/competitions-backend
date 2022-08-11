@@ -50,7 +50,7 @@ const getCompetition = async (id) => {
 }
 
 const getCompetitionRanking = async (competitionId) => {
-  const id = parseInt(competition)
+  const id = parseInt(competitionId)
   if (!Number.isInteger(id))
     return []
 
@@ -60,12 +60,13 @@ const getCompetitionRanking = async (competitionId) => {
                   ORDER BY donation_count desc`
 
 
-  return await sequelize.query(query, {
+  const result = await sequelize.query(query, {
     bind: {
       competitionId
     },
     type: sequelize.QueryTypes.SELECT
   })
+  return result
 }
 
 module.exports = { getCompetitions, getCompetition, getCompetitionRanking }
