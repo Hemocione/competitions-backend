@@ -1,4 +1,4 @@
-import { Model, DataTypes, Sequelize } from 'sequelize'
+import { Model, DataTypes, Sequelize, QueryTypes } from 'sequelize'
 import {
   HemocioneModels,
   InstitutionAttributes,
@@ -19,16 +19,21 @@ export default function init(sequelize: Sequelize) {
       if (!Number.isInteger(id)) return []
 
       const query = `SELECT CAST(sum(donation_count) as int) AS donation_count,
-                      teams."institutionId" AS institution_id,
-                      MAX(institutions.name) AS institution_name FROM "competitionTeams"
+                      teams."institutionId" AS id,
+                      MAX(institutions.name) AS name FROM "competitionTeams"
                       LEFT JOIN teams ON "competitionTeams"."teamId" = "teams".id
                       LEFT JOIN institutions ON teams."institutionId" = institutions.id
-                      WHERE "competitionId" = ${id}
-                      GROUP BY "institutionId"
+                      WHERE "competitionId" = $competitionId
+                      GROUP BY teams."institutionId"
                       ORDER BY donation_count DESC`
 
-      const data = (await sequelize.query(query));
-      return data[0]
+      const result = sequelize.query(query, {
+        bind: {
+          competitionId: id
+        },
+        type: QueryTypes.SELECT
+      })
+      return result
     }
   }
   institution.init(
