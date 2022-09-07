@@ -1,5 +1,5 @@
 import express from 'express'
-import { getRankingByCompetitionId } from '../services/institutionService'
+import  { getRanking }  from '../services/competitionTeamsService'
 import {
   createCompetition,
   editCompetition,
@@ -21,9 +21,10 @@ router.get(
   '/competitions/:id/rankings',
   funcWrapper(async (context: Context) => {
     const id = parseInt(context.req.params.id)
+    const { by } = context.req.query
     if (!Number.isInteger(id)) throw new NotFoundError('Competition not Found!')
 
-    const result = await getRankingByCompetitionId(id)
+    const result = await getRanking(id, by)
     return result
   })
 )
