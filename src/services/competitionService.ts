@@ -1,8 +1,7 @@
 import models from '../db/models'
-import { FindOptions } from 'sequelize'
+import { FindOptions, QueryTypes } from 'sequelize'
 import {
   CompetitionAttributes,
-  CompetitionTeamAttributes,
 } from '../db/models/types'
 
 // status 3 = draft, 2 = ativo, 1 = upcoming, 0 = finalizado
@@ -54,19 +53,18 @@ export const getCompetition = async (id: number) => {
 }
 
 export const getCompetitionRanking = async (competitionId: number) => {
-  const query: FindOptions<CompetitionTeamAttributes> = {
-    attributes: ['id', 'donation_count'],
-    where: {
-      competitionId: competitionId,
-    },
-    include: {
-      model: models.team,
-      attributes: ['name', 'id'],
-    },
-    order: [['donation_count', 'desc']],
-  }
+  const query = `SELECT "teamId" as id, donation_count, teams.name FROM "competitionTeams"
+                  LEFT JOIN teams ON "competitionTeams"."teamId" = teams.id
+                  WHERE "competitionId" = $competitionId
+                  ORDER BY donation_count desc`
 
-  return await models.competitionTeam.findAll(query)
+  const result = await models.sequelize.query(query, {
+    bind: {
+      competitionId
+    },
+    type: QueryTypes.SELECT
+  })
+  return result
 }
 
 export const createCompetition = async (
