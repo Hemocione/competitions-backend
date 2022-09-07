@@ -27,7 +27,7 @@ export default function init(sequelize: Sequelize) {
                       GROUP BY teams."institutionId"
                       ORDER BY donation_count DESC`
 
-      const result = sequelize.query(query, {
+      const result = await sequelize.query(query, {
         bind: {
           competitionId: id
         },
