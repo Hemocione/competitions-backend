@@ -1,7 +1,7 @@
-import { QueryInterface, INTEGER, STRING, DATE } from 'sequelize'
+const { INTEGER, STRING, DATE } = require('sequelize')
 
-export default {
-  async up(queryInterface: QueryInterface) {
+module.exports = {
+  async up(queryInterface) {
     await queryInterface.createTable('institutions', {
       id: {
         allowNull: false,
@@ -23,7 +23,7 @@ export default {
       },
     })
   },
-  async down(queryInterface: QueryInterface) {
+  async down(queryInterface) {
     await queryInterface.dropTable('institutions')
   },
 }

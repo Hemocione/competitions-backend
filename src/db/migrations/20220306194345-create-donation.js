@@ -1,9 +1,9 @@
-import { QueryInterface, INTEGER, DATE } from 'sequelize'
+const { INTEGER, STRING, DATE } = require('sequelize')
 
-export default {
-  async up(queryInterface: QueryInterface) {
+module.exports = {
+  async up(queryInterface) {
     await queryInterface.createTable(
-      'competitionTeams',
+      'donations',
       {
         id: {
           allowNull: false,
@@ -11,18 +11,20 @@ export default {
           primaryKey: true,
           type: INTEGER,
         },
-        donation_count: {
-          type: INTEGER,
-          defaultValue: 0,
+        user_name: {
+          type: STRING,
         },
-        teamId: {
+        user_email: {
+          type: STRING,
+          unique: 'uniqueDonationCompetition',
+        },
+        competitionTeamId: {
           type: INTEGER,
-          unique: 'uniqueParticipant',
-          references: { model: 'teams', key: 'id' },
+          references: { model: 'competitionTeams', key: 'id' },
         },
         competitionId: {
           type: INTEGER,
-          unique: 'uniqueParticipant',
+          unique: 'uniqueDonationCompetition',
           references: { model: 'competitions', key: 'id' },
         },
         createdAt: {
@@ -36,14 +38,14 @@ export default {
       },
       {
         uniqueKeys: {
-          uniqueParticipant: {
-            fields: ['competitionId', 'teamId'],
+          uniqueDonationCompetition: {
+            fields: ['user_email', 'competitionId'],
           },
         },
       }
     )
   },
-  async down(queryInterface: QueryInterface) {
-    await queryInterface.dropTable('competitionTeams')
+  async down(queryInterface) {
+    await queryInterface.dropTable('donations')
   },
 }

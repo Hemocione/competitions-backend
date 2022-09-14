@@ -1,7 +1,7 @@
-import {BOOLEAN, DATE, QueryInterface} from 'sequelize'
+const { BOOLEAN, DATE} = require('sequelize')
 
-export default {
-  up (queryInterface: QueryInterface) {
+module.exports = {
+  up (queryInterface) {
     return Promise.all([queryInterface.addColumn(
       'competitions',
       'published',
@@ -19,7 +19,7 @@ export default {
     })]);
   },
 
-  down (queryInterface: QueryInterface) {
+  down (queryInterface) {
     return Promise.all([
       queryInterface.removeColumn('competitions', 'published'),
       queryInterface.removeColumn('competitions', 'publication_date'),
