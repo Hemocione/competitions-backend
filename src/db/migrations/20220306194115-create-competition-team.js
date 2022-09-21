@@ -1,44 +1,49 @@
-'use strict';
-module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('competitionTeams', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+const { INTEGER, DATE } = require('sequelize')
+
+module.exports =  {
+  async up(queryInterface) {
+    await queryInterface.createTable(
+      'competitionTeams',
+      {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: INTEGER,
+        },
+        donation_count: {
+          type: INTEGER,
+          defaultValue: 0,
+        },
+        teamId: {
+          type: INTEGER,
+          unique: 'uniqueParticipant',
+          references: { model: 'teams', key: 'id' },
+        },
+        competitionId: {
+          type: INTEGER,
+          unique: 'uniqueParticipant',
+          references: { model: 'competitions', key: 'id' },
+        },
+        createdAt: {
+          allowNull: false,
+          type: DATE,
+        },
+        updatedAt: {
+          allowNull: false,
+          type: DATE,
+        },
       },
-      donation_count: {
-        type: Sequelize.INTEGER,
-        defaultValue: 0
-      },
-      teamId: {
-        type: Sequelize.INTEGER,
-        unique: 'uniqueParticipant',
-        references: { model: 'teams', key: 'id'}
-      },
-      competitionId: {
-        type: Sequelize.INTEGER,
-        unique: 'uniqueParticipant',
-        references: { model: 'competitions', key: 'id'}
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      {
+        uniqueKeys: {
+          uniqueParticipant: {
+            fields: ['competitionId', 'teamId'],
+          },
+        },
       }
-    }, {
-      uniqueKeys: {
-        uniqueParticipant: {
-          fields: ['competitionId', 'teamId']
-        }
-      }
-    });
+    )
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('competitionTeams');
-  }
-};
+  async down(queryInterface) {
+    await queryInterface.dropTable('competitionTeams')
+  },
+}

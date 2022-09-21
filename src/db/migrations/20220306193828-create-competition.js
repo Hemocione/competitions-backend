@@ -1,33 +1,34 @@
-'use strict';
+const { INTEGER, STRING, DATE } = require('sequelize')
+
 module.exports = {
-  async up(queryInterface, Sequelize) {
+  async up(queryInterface) {
     await queryInterface.createTable('competitions', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: INTEGER,
       },
       name: {
-        type: Sequelize.STRING
+        type: STRING,
       },
       start_at: {
-        type: Sequelize.DATE
+        type: DATE,
       },
       end_at: {
-        type: Sequelize.DATE
+        type: DATE,
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: DATE,
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
-      }
-    });
+        type: DATE,
+      },
+    })
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('competitions');
-  }
-};
+  async down(queryInterface) {
+    await queryInterface.dropTable('competitions')
+  },
+}

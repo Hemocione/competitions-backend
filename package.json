@@ -4,8 +4,9 @@
   "description": "Hemocione Competitions Backend",
   "main": "src/app.js",
   "scripts": {
-    "build": "npx sequelize-cli db:migrate",
-    "start": "node src/app.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "build": "tsc --build",
+    "start": "npm run build && node ./out/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Hemocione INC.",

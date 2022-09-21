@@ -1,39 +1,44 @@
-'use strict';
+const { INTEGER, STRING, DATE } = require('sequelize')
+
 module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('teams', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
+  async up(queryInterface) {
+    await queryInterface.createTable(
+      'teams',
+      {
+        id: {
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+          type: INTEGER,
+        },
+        name: {
+          type: STRING,
+          unique: 'institutionUniqueTeams',
+        },
+        institutionId: {
+          type: INTEGER,
+          unique: 'institutionUniqueTeams',
+          references: { model: 'institutions', key: 'id' },
+        },
+        createdAt: {
+          allowNull: false,
+          type: DATE,
+        },
+        updatedAt: {
+          allowNull: false,
+          type: DATE,
+        },
       },
-      name: {
-        type: Sequelize.STRING,
-        unique: 'institutionUniqueTeams'
-      },
-      institutionId: {
-        type: Sequelize.INTEGER,
-        unique: 'institutionUniqueTeams',
-        references: { model: 'institutions', key: 'id'}
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+      {
+        uniqueKeys: {
+          institutionUniqueTeams: {
+            fields: ['name', 'institutionId'],
+          },
+        },
       }
-    }, {
-      uniqueKeys: {
-        institutionUniqueTeams: {
-          fields: ['name', 'institutionId']
-        }
-      }
-    });
+    )
   },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('teams');
-  }
-};
+  async down(queryInterface) {
+    await queryInterface.dropTable('teams')
+  },
+}
