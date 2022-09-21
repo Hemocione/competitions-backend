@@ -4,11 +4,7 @@
   "description": "Hemocione Competitions Backend",
   "main": "out/app.js",
   "scripts": {
-<<<<<<< HEAD
     "migrate": "npx sequelize-cli db:migrate",
-=======
-    "migrate": "yarn sequelize-cli db:migrate",
->>>>>>> parent of e6c39c0... Revert "Merge pull request #6 from Hemocione/develop"
     "build": "tsc --build",
     "start": "npm run build && node ./out/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
