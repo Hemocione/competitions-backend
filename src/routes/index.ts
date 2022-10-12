@@ -40,7 +40,7 @@ router.post(
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         params: {
-          secret: process.env.SECRET_KEY,
+          secret: process.env.SECRET_RECAPTCHA_KEY,
           response: context.req.body['g-recaptcha-response']
         }
       }
