@@ -2,7 +2,7 @@ name: Build & Deploy
 
 on:
   push:
-    branches: [ "master", "develop" ]
+    branches: [ "develop" ]
 
 jobs:
   build-and-deploy:
@@ -36,5 +36,5 @@ jobs:
         uses: caprover/deploy-from-github@v1.0.1
         with:
           server: '${{ secrets.CAPROVER_SERVER }}'
-          app: '${{ secrets.CAPROVER_APP_NAME }}'
-          token: '${{ secrets.CAPROVER_APP_TOKEN }}'
+          app: '${{ secrets.CAPROVER_APP_NAME_DEV }}'
+          token: '${{ secrets.CAPROVER_APP_TOKEN_DEV }}'
