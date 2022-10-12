@@ -29,6 +29,7 @@ jobs:
             src/
             package.json
             captain-definition
+            tsconfig.json
             .sequelizerc
           outPath: deploy.tar
   
