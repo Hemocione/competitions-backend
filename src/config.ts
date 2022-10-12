@@ -18,7 +18,7 @@ function getEnvVariable(property: string, defaultValue: string): string {
 
 const defaultConfigs = {
   environment: getEnvVariable('ENV', 'development'),
-  secret: getEnvVariable('SECRET_KEY', 'secret'),
+  secretRecaptchaKey: getEnvVariable('SECRET_RECAPTCHA_KEY', 'secret'),
   port: getEnvVariable('PORT', '8080'),
   api_url: getEnvVariable('API_URL', 'https://hemocione-id-dev.herokuapp.com'),
 }
@@ -69,7 +69,7 @@ export function isLocalConfigs(
 
 interface DefaultConfigs {
   environment: string
-  secret: string
+  secretRecaptchaKey: string
   port: string
   api_url: string
 }
