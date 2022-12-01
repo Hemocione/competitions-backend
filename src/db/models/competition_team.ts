@@ -9,6 +9,13 @@ class competitionTeam extends Model<
   CompetitionTeamAttributes,
   CompetitionTeamCreationAttributes
 > {
+  declare id: number;
+  declare donation_count: number;
+  declare teamId: number;
+  declare competitionId: number;
+  declare createdAt: Date;
+  declare updatedAt: Date;
+
   static associate(models: HemocioneModels) {
     this.belongsTo(models.team)
 
