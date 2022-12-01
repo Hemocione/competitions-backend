@@ -17,7 +17,7 @@ export const registerDonation = async (
       { transaction: t }
     )
     await models.competitionTeam.increment('donation_count', {
-      where: { id: competitionTeamId, competitionId: competitionId },
+      where: { teamId: competitionTeamId, competitionId: competitionId },
       transaction: t,
     })
     return createdDonation
