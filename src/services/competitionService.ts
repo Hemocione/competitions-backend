@@ -24,7 +24,7 @@ export const getCompetitions = async (includeUnpublished = false) => {
     ],
     order: [
       [models.sequelize.literal(statusCaseWhenClause), 'DESC'],
-      ['start_at', 'ASC'],
+      ['end_at', 'DESC'],
     ],
   }
 
