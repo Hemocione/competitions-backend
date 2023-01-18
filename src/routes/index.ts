@@ -1,5 +1,5 @@
 import express from "express";
-import { NotFoundError, Unexpected } from "../errors";
+import { NotFoundError, Unauthorized } from "../errors";
 import funcWrapper from "../helpers/funcWrapper";
 import {
   getCompetitions,
@@ -52,7 +52,7 @@ router.post(
           context.req.body["g-recaptcha-response"]
         } - error: ${JSON.stringify(googleResJson)}`
       );
-      throw new Unexpected("Erro de captcha. Você é um robô?");
+      throw new Unauthorized("Erro de captcha. Você é um robô?");
     }
 
     const competitionId = parseInt(context.req.params.id);
@@ -62,27 +62,15 @@ router.post(
 
     const { user_name, user_email, competitionTeamId } = context.req.body;
 
-    try {
-      const competition = await getCompetition(competitionId);
-      if (competition === null) {
-        throw new NotFoundError("Competição não encontrada.");
-      } else {
-        try {
-          return await registerDonation(
-            competitionId,
-            competitionTeamId,
-            user_name,
-            user_email
-          );
-        } catch (err) {
-          console.log(`Erro [${err}] quando registrando doação.`);
-          throw new Unexpected("Erro ao tentar registrar a doação.");
-        }
-      }
-    } catch (err) {
-      console.log(`Erro [${err}] quando registrando doação.`);
-      throw new Unexpected("Erro ao tentar registrar a doação.");
-    }
+    const competition = await getCompetition(competitionId);
+    if (!competition) throw new NotFoundError("Competição não encontrada.");
+
+    return await registerDonation(
+      competitionId,
+      competitionTeamId,
+      user_name,
+      user_email
+    );
   })
 );
 
