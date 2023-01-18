@@ -1,6 +1,5 @@
-import { CompetitionsRequest, Context } from '../types'
-import { Request, Response, NextFunction } from 'express'
-import { Unexpected } from '../errors'
+import { CompetitionsRequest, Context } from "../types";
+import { Response, NextFunction } from "express";
 
 export default function funcWrapper(func: (context: Context) => Promise<any>) {
   return async (
@@ -11,16 +10,16 @@ export default function funcWrapper(func: (context: Context) => Promise<any>) {
     try {
       const context: Context = {
         req: request,
-      }
+      };
 
       if (request.user) {
-        context.user = request.user
+        context.user = request.user;
       }
 
-      const result = await func(context)
-      return response.status(200).json(result)
+      const result = await func(context);
+      return response.status(200).json(result);
     } catch (error) {
-      return next(error)
+      return next(error);
     }
-  }
+  };
 }
