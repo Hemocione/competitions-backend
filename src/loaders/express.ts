@@ -14,6 +14,9 @@ import config from "../config";
 const init = (expressConfig: { expressApp: Express }) =>
   new Promise(async (resolve, reject) => {
     const app = expressConfig.expressApp;
+    let tracesSampleRate = 1.0;
+    if (config.environment === "production") tracesSampleRate = 0.1;
+
     Sentry.init({
       dsn: config.sentryDsn,
       environment: config.environment,
@@ -21,7 +24,7 @@ const init = (expressConfig: { expressApp: Express }) =>
         new Sentry.Integrations.Http({ tracing: true }),
         new Tracing.Integrations.Express({ app }),
       ],
-      tracesSampleRate: 1.0,
+      tracesSampleRate,
     });
 
     // RequestHandler creates a separate execution context using domains, so that every
