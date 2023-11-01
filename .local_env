@@ -1,0 +1,8 @@
+# NODE_ENV=local
+DB_HOST=localhost
+DB_PASS=123
+DB_USER=postgres
+DB_PORT=5432
+DB_NAME=competitions
+
+DATABASE_URL=postgres://postgres:123@localhost:5432/competitions
