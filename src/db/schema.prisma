@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model institutions {
+  id        Int      @id @default(autoincrement())
+  name      String?  @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teams     teams[]
+}
+
+model teams {
+  id               Int                @id @default(autoincrement())
+  name             String?            @db.VarChar(255)
+  institutionId    Int?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  competitionTeams competitionTeams[]
+  institutions     institutions?      @relation(fields: [institutionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([name, institutionId])
+}
+
+model competitions {
+  id               Int                @id @default(autoincrement())
+  name             String?            @db.VarChar(255)
+  start_at         DateTime?          @db.Timestamptz(6)
+  end_at           DateTime?          @db.Timestamptz(6)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  published        Boolean?           @default(false)
+  publication_date DateTime?          @db.Timestamptz(6)
+  competitionTeams competitionTeams[]
+  donations        donations[]
+
+  @@index([end_at], map: "competitions_end_at")
+  @@index([start_at], map: "competitions_start_at")
+}
+
+model competitionTeams {
+  id             Int           @id @default(autoincrement())
+  donation_count Int?          @default(0)
+  teamId         Int?
+  competitionId  Int?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  competitions   competitions? @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  teams          teams?        @relation(fields: [teamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  donations      donations[]
+
+  @@unique([competitionId, teamId])
+}
+
+model donations {
+  id                Int               @id @default(autoincrement())
+  user_name         String?           @db.VarChar(255)
+  user_email        String?           @db.VarChar(255)
+  competitionTeamId Int?
+  competitionId     Int?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  competitions      competitions?     @relation(fields: [competitionId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  competitionTeams  competitionTeams? @relation(fields: [competitionTeamId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@unique([user_email, competitionId])
+}

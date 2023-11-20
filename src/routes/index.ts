@@ -6,7 +6,12 @@ import {
   getCompetition,
   getCompetitionRanking,
 } from "../services/competitionService";
+
+
+
 import { registerDonation } from "../services/donationService";
+
+
 import axios from "axios";
 const router = express.Router();
 
@@ -33,27 +38,6 @@ router.get(
 router.post(
   "/:id/donations",
   funcWrapper(async (context) => {
-    const { data: googleResJson } = await axios.post(
-      `https://www.google.com/recaptcha/api/siteverify`,
-      {},
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        params: {
-          secret: process.env.SECRET_RECAPTCHA_KEY,
-          response: context.req.body["g-recaptcha-response"],
-        },
-      }
-    );
-    if (!googleResJson["success"]) {
-      console.log(
-        `Captcha inválido: ${
-          context.req.body["g-recaptcha-response"]
-        } - error: ${JSON.stringify(googleResJson)}`
-      );
-      throw new Unauthorized("Erro de captcha. Você é um robô?");
-    }
 
     const competitionId = parseInt(context.req.params.id);
     if (!Number.isInteger(competitionId)) {
@@ -63,13 +47,15 @@ router.post(
     const { user_name, user_email, competitionTeamId } = context.req.body;
 
     const competition = await getCompetition(competitionId);
-    if (!competition) throw new NotFoundError("Competição não encontrada.");
+    
 
+    if (!competition) throw new NotFoundError("Competição não encontrada.");
+    
     return await registerDonation(
-      competitionId,
-      competitionTeamId,
-      user_name,
-      user_email
+        competitionId,
+        competitionTeamId, // NÃO DEVERIA SER TEAM ID?
+        user_name,
+        user_email
     );
   })
 );

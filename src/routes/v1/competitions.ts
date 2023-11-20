@@ -89,7 +89,7 @@ router.put(
   auth,
   validateRoles(["admin"]),
   funcWrapper(async (context) => {
-    const { id } = context.req.params;
+    const id  = parseInt(context.req.params.id);
     const { name, startsAt, endsAt } = context.req.body;
 
     if (!name || !startsAt || !endsAt) throw new Unexpected("Bad Request!");
@@ -105,8 +105,8 @@ router.delete(
   auth,
   validateRoles(["admin"]),
   funcWrapper(async (context) => {
-    const { id } = context.req.params;
 
+    const id  = parseInt(context.req.params.id);
     const result = await deleteCompetition(id);
 
     return result;

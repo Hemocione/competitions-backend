@@ -1,81 +1,100 @@
-import models from '../db/models'
-import { NotFoundError, Unexpected } from '../errors'
+
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();import { NotFoundError, Unexpected } from '../errors'
 
 export const createTeam = async (name: string, institutionId: number) => {
-  return await models.sequelize.transaction(async (t) => {
-    const duplicatedTeam = await models.team.findOne({
-      where: { institutionId, name },
-    })
-    if (duplicatedTeam)
-      throw new Unexpected(`O nome '${name}' já está sendo utilizado`)
+  const duplicatedTeam = await prisma.teams.findFirst({
+    where: { institutionId, name }, // Não poderíamos olhar apenas o name e não o institutuin ID
+  }); 
 
-    const createdTeam = await models.team.create(
-      { name, institutionId },
-      { transaction: t }
-    )
-    return createdTeam
-  })
-}
+  if (duplicatedTeam) {
+    throw new Error(`O nome '${name}' já está sendo utilizado`);
+  }
+
+  const createdTeam = await prisma.teams.create({
+    data: {
+      name: name,
+      institutionId: institutionId,
+    },
+  });
+
+  return createdTeam;
+};
+
 
 export const editTeam = async (
   name: string,
   id: number,
   institutionId: number
 ) => {
-  return await models.sequelize.transaction(async (t) => {
-    const duplicatedTeam = await models.team.findOne({
-      where: { institutionId, name },
-    })
-    if (duplicatedTeam)
-      throw new Unexpected(`O nome '${name}' já está sendo utilizado`)
+  const duplicatedTeam = await prisma.teams.findFirst({
+    where: { name },
+  });
 
-    const teamToEdit = await models.team.findOne({
-      where: { id, institutionId },
-    })
-    if (!teamToEdit) throw new NotFoundError('Time não encontrado')
+  if (duplicatedTeam) {
+    throw new Unexpected(`O nome '${name}' já está sendo utilizado`);
+  }
 
-    teamToEdit.setAttributes({ name })
-    return await teamToEdit.save({ transaction: t })
-  })
-}
+  const teamToEdit = await prisma.teams.findUnique({
+    where: { id: id, institutionId: institutionId },
+  });
+
+  if (!teamToEdit) {
+    throw new NotFoundError('Time não encontrado');
+  }
+
+  const updatedTeam = await prisma.teams.update({
+    where: { id: id, institutionId: institutionId },
+    data: {
+      name: name,
+    },
+  });
+
+  return updatedTeam;
+};
 
 export const deleteTeam = async (id: number, institutionId: number) => {
-  return await models.sequelize.transaction(async (t) => {
-    const deletedTeam = await models.team.destroy({
-      where: { id, institutionId },
-      transaction: t,
-    })
-    return deletedTeam
-  })
-}
+  const deletedTeam = await prisma.teams.delete({
+    where: { id: id, institutionId: institutionId },
+  });
+
+  return deletedTeam;
+};
 
 export const assignTeamToCompetition = async (
   teamId: number,
   competitionId: number
 ) => {
-  return await models.sequelize.transaction(async (t) => {
-    const createdCompetitionTeam = await models.competitionTeam.create(
-      { teamId, competitionId, donation_count: 0 },
-      { transaction: t }
-    )
-    return createdCompetitionTeam
-  })
-}
+  const createdCompetitionTeam = await prisma.competitionTeams.create({
+    data: {
+      teamId: teamId,
+      competitionId: competitionId,
+      donation_count: 0,
+    },
+  });
+
+  return createdCompetitionTeam;
+};
 
 export const unassignTeamFromCompetition = async (
   teamId: number,
   competitionId: number
 ) => {
   try {
-    return await models.sequelize.transaction(async (t) => {
-      const deletedCompetitionTeam = await models.competitionTeam.destroy({
-        where: { teamId, competitionId },
-        transaction: t,
-      })
+    const deletedCompetitionTeam = await prisma.competitionTeams.delete({
+      where: {
+        competitionId_teamId: {
+          teamId: teamId,
+          competitionId: competitionId,
+        },
+      },
+    });
 
-      return deletedCompetitionTeam
-    })
+    return deletedCompetitionTeam;
   } catch (error) {
-    console.log(error)
+    console.error(error);
+    // Handle the error as needed
+    throw error;
   }
-}
+};
