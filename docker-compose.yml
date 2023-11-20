@@ -8,6 +8,7 @@ services:
       POSTGRES_DB: competitions
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 123
+      POSTGRES_SSL: "off" # Disable SSL
     ports:
       - "5432:5432"
     volumes:

@@ -1,8 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import { Dialect } from "sequelize";
-
 function getEnvVariable(property: string, defaultValue: string): string {
   const value = process.env[property];
   if (!value && defaultValue === "throw:required") {
@@ -27,13 +25,14 @@ const defaultConfigs = {
 let databaseConfigs;
 
 if (defaultConfigs.environment === "local") {
+
   databaseConfigs = {
     database: {
       database: getEnvVariable("DB_NAME", "throw:required"),
       username: getEnvVariable("DB_USER", "throw:required"),
       password: getEnvVariable("DB_PASS", "throw:required"),
       host: getEnvVariable("DB_HOST", "throw:required"),
-      dialect: "postgres" as Dialect,
+      url : getEnvVariable("DATABASE_URL", "throw:required"),
       dialectOptions: {
         useUTC: false,
         ssl: {
@@ -49,7 +48,6 @@ if (defaultConfigs.environment === "local") {
     database_url: getEnvVariable("DATABASE_URL", "throw:required"),
     database: {
       use_env_variable: "DATABASE_URL",
-      dialect: "postgres" as Dialect,
       dialectOptions: {
         useUTC: false,
         ssl: {
@@ -82,7 +80,7 @@ interface LocalConfigs extends DefaultConfigs {
     username: string;
     password: string;
     host: string;
-    dialect: Dialect;
+    url: string;
     dialectOptions: {
       useUTC: boolean;
       ssl: {
@@ -98,7 +96,6 @@ interface DevelopmentConfigs extends DefaultConfigs {
   database_url: string;
   database: {
     use_env_variable: string;
-    dialect: Dialect;
     dialectOptions: {
       useUTC: boolean;
       ssl: {

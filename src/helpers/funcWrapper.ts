@@ -19,6 +19,7 @@ export default function funcWrapper(func: (context: Context) => Promise<any>) {
       const result = await func(context);
       return response.status(200).json(result);
     } catch (error) {
+      console.error(error);
       return next(error);
     }
   };

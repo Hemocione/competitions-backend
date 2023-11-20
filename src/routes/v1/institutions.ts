@@ -8,7 +8,12 @@ import {
   editInstitution,
   deleteInstitution,
 } from "../../services/institutionService";
+
+
 import { createTeam, editTeam, deleteTeam } from "../../services/teamService";
+
+
+
 const router = express.Router();
 
 router.post(
@@ -31,7 +36,8 @@ router.put(
   auth,
   validateRoles(["admin"]),
   funcWrapper(async (context) => {
-    const { id } = context.req.params;
+
+    const id = parseInt(context.req.params.id);
     const { name } = context.req.body;
 
     if (!name) throw new Unexpected("Bad Request!");
@@ -47,7 +53,7 @@ router.delete(
   auth,
   validateRoles(["admin"]),
   funcWrapper(async (context) => {
-    const { id } = context.req.params;
+    const id = parseInt(context.req.params.id);
 
     const result = await deleteInstitution(id);
 
@@ -70,7 +76,7 @@ router.post(
 
     //TODO: Validate if name is unique
 
-    const result = await createTeam(name, institutionId);
+    const result = await createTeam(name, institutionId); 
 
     return result;
   })
@@ -113,7 +119,7 @@ router.delete(
     if (!institutionId || !Number.isInteger(institutionId))
       throw new Unexpected("Bad Request!");
 
-    const result = await deleteTeam(teamId, institutionId);
+    const result = await deleteTeam(teamId, institutionId); // TODO É PRECISO VER COMO PASSAR AS MENSAGENS DE ERRO POR NÃO ACHAR UM TIME
 
     return result;
   })
